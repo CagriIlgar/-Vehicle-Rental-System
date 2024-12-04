@@ -5,6 +5,5 @@ export default function Home() {
     <h1>
       VRS
     </h1>
-    
   );
 }
