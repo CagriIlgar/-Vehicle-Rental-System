@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("../styles/colors.css");
+
 body {
-    background-color: #1C0126 ;
+    background-color: var(--background);
+}
+button {
+    background-color: red;
 }

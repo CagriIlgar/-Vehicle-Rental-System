@@ -1,7 +1,15 @@
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import "../Header/header.css";
 
 const Header: React.FC = () => {
+  const router = useRouter();
+
+  const handleLoginClick = () => {
+    router.push("/signin");
+  };
+
   return (
     <div className="header-container">
       <header>
@@ -14,7 +22,7 @@ const Header: React.FC = () => {
           </nav>
         </div>
         <div className="actions">
-          <button className="login">Log in</button>
+          <button className="login" onClick={handleLoginClick}>Log in</button>
           <button className="get-started">Get started</button>
         </div>
       </header>
