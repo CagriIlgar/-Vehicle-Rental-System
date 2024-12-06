@@ -1,9 +1,14 @@
 :root{
-    --background: #1C0126;
-    --yellow: #F7B901;
-    --blue: #007BFF;
-    --green: #019B47;
+    --background: #000914;
+    --primary: #000c1d;
+    --secondary: #F7B901;
+    --blue: #3B82F6;
+    --blueMid: #2563EB;
+    --green: #027d39;
     --darkBlue: #00109B;
     --grey: #D9D9D9;
     --darkGrey: #7E7E7E;
+    --light: #ffffff;
+    --red: #3a0000;
+    --dark: #000000;
 }
