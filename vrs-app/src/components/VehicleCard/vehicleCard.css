@@ -1,0 +1,77 @@
+@import url("../../styles/colors.css");
+
+.vehicle-card {
+  display: flex;
+  background-color: var(--light);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  width: 772px;
+  height: 189px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.vehicle-image {
+  width: 305px;
+  height: 100%;
+  object-fit: contain;
+}
+.vehicle-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px;
+}
+.vehicle-info {
+  display: flex;
+  flex-direction: column;
+}
+.vehicle-model {
+  font-size: 1.2em;
+  margin: 0;
+  font-weight: bold;
+}
+.vehicle-type {
+  font-size: 1em;
+  color: var(--darkGrey);
+}
+.vehicle-price {
+  font-size: 1.1em;
+  color: red;
+  font-weight: bold;
+  text-align: right;
+  margin-bottom: 10px;
+}
+.vehicle-price span {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.vehicle-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.info-button, .contact-button {
+  background-color: transparent;
+  color: var(--primary);
+  border: none;
+  font-size: 0.9em;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.info-button:hover, .contact-button:hover {
+  text-decoration: none;
+}
+.view-deal-button {
+  padding: 10px 20px;
+  background-color: var(--green);
+  color: var(--light);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.view-deal-button:hover {
+  background-color: #218838;
+}

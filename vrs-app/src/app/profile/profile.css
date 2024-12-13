@@ -1,58 +1,71 @@
 @import url("../../styles/colors.css");
 
 .profile-container {
-  background-color: var(--primary);
-  color: var(--light);
+  color: var(--dark);
+  background-color: var(--grey);
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 0 7px 5px white;
-  max-width: 800px;
-  margin: 50px auto;
+  width: 80%;
+  margin: 20px auto;
 }
+
 .profile-header {
   font-size: 32px;
   color: var(--secondary);
   margin-bottom: 15px;
 }
+
 .user-info {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 30px;
+  position: relative;
 }
+
+.user-avatar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin: 10px;
+}
+
 .user-greeting,
 .user-email {
   font-size: 18px;
-  color: var(--light);
+  color: var(--dark);
 }
-.user-avatar {
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  margin-top: 10px;
-}
+
 .rental-info {
   margin-top: 40px;
 }
+
 .rental-title {
   font-size: 24px;
   color: var(--yellow);
   margin-bottom: 15px;
 }
+
 .rental-details,
 .previous-rentals {
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
 .rental-details p,
 .previous-rental p {
   font-size: 16px;
   margin: 5px 0;
 }
+
 .previous-rental {
   margin-bottom: 10px;
 }
+
 .return-car-btn {
   background-color: var(--green);
   color: var(--light);
@@ -64,6 +77,7 @@
   margin-top: 10px;
   transition: background-color 0.3s;
 }
+
 .sign-out-btn {
   background-color: var(--red);
   color: white;
@@ -76,22 +90,124 @@
   width: 100%;
   transition: background-color 0.3s;
 }
-.sign-out-btn:hover{
+
+.sign-out-btn:hover {
   background-color: rgb(118, 1, 1);
 }
+
 .loading-text {
   color: var(--secondary);
   font-size: 18px;
 }
+
 .not-signed-in {
   font-size: 20px;
   color: var(--secondary);
   margin-bottom: 20px;
 }
+
 .user-greeting,
 .user-email,
 .rental-details p,
-.previous-rental p
-{
-    color: white;
+.previous-rental p {
+  color: var(--dark);
+}
+
+.profile-toggle {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.business-checkbox-label {
+  font-size: 18px;
+  color: var(--light);
+}
+
+.business-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.car-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: var(--primary);
+  border-radius: 10px;
+  box-shadow: 0 0 5px var(--light);
+  width: 300px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.business-cars-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: var(--grey);
+  border-radius: 10px;
+  box-shadow: 0 0 5px var(--light);
+}
+
+.business-car-item {
+  padding: 10px;
+  background-color: var(--light);
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+}
+
+.no-cars {
+  color: var(--dark);
+  text-align: center;
+}
+
+.business-title {
+  font-size: 24px;
+  color: var(--yellow);
+  margin-bottom: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 16px;
+  color: var(--light);
+}
+
+.form-group input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+}
+
+.submit-btn {
+  background-color: var(--green);
+  color: var(--light);
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: var(--secondary);
+}
+
+.business-title {
+  color: var(--secondary);
 }

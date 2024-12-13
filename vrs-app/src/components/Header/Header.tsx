@@ -1,7 +1,7 @@
 'use client';
 import React, { Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import "../Header/header.css";
 
 const Header: React.FC = () => {
@@ -11,9 +11,16 @@ const Header: React.FC = () => {
   const handleLoginClick = () => {
     router.push("/signin");
   };
+  const handleGetStartedClick = () => {
+    router.push("/registration");
+  };
 
   const handleProfileClick = () => {
     router.push("/profile");
+  };
+
+  const handleNavClick = (path: string) => {
+    router.push(path);
   };
 
   return (
@@ -23,24 +30,24 @@ const Header: React.FC = () => {
           <div className="logo">CyRent</div>
           <div className="navBar">
             <nav>
-              <a href="/">HOME</a>
-              <a href="/about">ABOUT US</a>
-              <a href="/contact">CONTACT</a>
+              <button className="nav-link" onClick={() => handleNavClick("/")}>HOME</button>
+              <button className="nav-link" onClick={() => handleNavClick("/about")}>ABOUT US</button>
+              <button className="nav-link" onClick={() => handleNavClick("/contact")}>CONTACT</button>
             </nav>
           </div>
           <div className="actions">
             {session ? (
-              <>
-                <button className="profile" onClick={handleProfileClick}>
-                  Profile
-                </button>
-              </>
+              <button className="profile" onClick={handleProfileClick}>
+                Profile
+              </button>
             ) : (
               <>
                 <button className="login" onClick={handleLoginClick}>
                   Log in
                 </button>
-                <button className="get-started">Get started</button>
+                <button className="get-started" onClick={handleGetStartedClick}>
+                  Get started
+                </button>
               </>
             )}
           </div>

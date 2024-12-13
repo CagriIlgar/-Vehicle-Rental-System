@@ -1,62 +1,40 @@
+
 import React from "react";
-import "./page.css";
+import Card from "../components/Card/Card";
 
 const HomePage: React.FC = () => {
-  return (
-    <div
-      className="bg-cover bg-center min-h-screen"
-      style={{
-        backgroundImage: "url('/path/to/background-image.jpg')", // Arka plan resmi buraya eklenecek
-      }}
-    >
-      <div className="bg-black min-h-screen flex flex-col items-center justify-center text-center px-4">
-        <h1 className="title">Welcome to CyRent</h1>
-        <p className="intro-text">
-          Discover a wide range of <span className="font-bold">vehicles</span> to suit your needs. Whether you’re
-          looking for <span className="font-bold">cars</span>,{" "}
-          <span className="font-bold">motorcycles</span>,{" "}
-          <span className="font-bold">scooters</span>, or even{" "}
-          <span className="font-bold">boats</span>, we’ve got you covered. Start
-          your journey with us today!
-        </p>
+    return (
+        <div
+            className="relative bg-cover bg-center min-h-screen"
+            style={{
+                backgroundImage: "url('/home.jpg')",
+            }}
+        >
+            <div className="home-info">
+                <br />
+                <h1 className="title">Welcome to CyRent</h1>
+                <p className="intro-text">
+                    Discover a wide range of vehicles to suit your needs. Whether
+                    you’re looking for cars, motorcycles, scooters, or even boats,
+                    we’ve got you covered. Start your journey with us today!
+                </p>
+            </div>
+            <br />
 
-        
-        <div className="row">
-          <div className="card">
-            <img src="/path/to/car.jpg" alt="CARS" className="card-img" />
-            <h2 className="card-title">CARS</h2>
-            <button className="card-button">VIEW ALL!</button>
-          </div>
-          <div className="card">
-            <img
-              src="/path/to/motorcycle.jpg"
-              alt="MOTORCYCLES"
-              className="card-img"
-            />
-            <h2 className="card-title">MOTORCYCLES</h2>
-            <button className="card-button">VIEW ALL!</button>
-          </div>
-          <div className="card">
-            <img src="/path/to/boat.jpg" alt="BOATS" className="card-img" />
-            <h2 className="card-title">BOATS</h2>
-            <button className="card-button">VIEW ALL!</button>
-          </div>
+            <div className="absolute inset-0 bg-black opacity-50"></div>
+            <div className="relative z-10">
+                <div className="row">
+                    <Card image="/home-car.png" title="CARS" navigateTo="/vehicles/cars" />
+                    <Card image="/home-motor.png" title="MOTORCYCLES" navigateTo="/vehicles/motorcycles" />
+                    <Card image="/home-boat.png" title="BOATS" navigateTo="/vehicles/boats" />
+                </div>
+                <div className="row">
+                    <Card image="/home-scooter.png" title="SCOOTERS" navigateTo="/vehicles/scooters" />
+                    <Card image="/home-bicycle.png" title="BICYCLES" navigateTo="/vehicles/bicycles" />
+                </div>
+            </div>
         </div>
-        <div className="row">
-          <div className="card">
-            <img src="/path/to/scooter.jpg" alt="SCOOTERS" className="card-img" />
-            <h2 className="card-title">SCOOTERS</h2>
-            <button className="card-button">VIEW ALL!</button>
-          </div>
-          <div className="card">
-            <img src="/path/to/bicycle.jpg" alt="BICYCLES" className="card-img" />
-            <h2 className="card-title">BICYCLES</h2>
-            <button className="card-button">VIEW ALL!</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default HomePage;

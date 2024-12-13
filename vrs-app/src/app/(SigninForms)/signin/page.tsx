@@ -1,9 +1,34 @@
 'use client';
 
-import { signIn } from "next-auth/react";
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import './signin.css';
 
 const SignInPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    // Use next-auth's signIn method for email/password login
+    const response = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (response?.error) {
+      setErrorMessage(response.error);
+    } else {
+      alert('Login successful!');
+      router.push('/');
+    }
+  };
+
   return (
     <div className="siginPageContainer">
       <h1>CyRent</h1>
@@ -13,13 +38,26 @@ const SignInPage = () => {
 
         <div className="formGroup">
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" placeholder="example@cyrent.com" />
+          <input
+            id="email"
+            type="email"
+            placeholder="example@cyrent.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
 
         <div className="formGroup">
-          <label htmlFor="password" >Password</label>
-          <input id="password" type="password" />
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
+
+        {errorMessage && <div className="error">{errorMessage}</div>}
 
         <div className="formGroup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <label>
@@ -29,9 +67,10 @@ const SignInPage = () => {
           <a href="#" className="forgotPasswordBtn">Forgot Password?</a>
         </div>
 
-        <button className="signInButton" onClick={() => signIn('google', { callbackUrl: "/" })}>
+        <button className="signInButton" onClick={handleSubmit}>
           Sign In
         </button>
+        <a href="/registration" className="forgotPasswordBtn">Create Account</a>
         <div className="divider">
           <span>or</span>
         </div>
@@ -41,7 +80,6 @@ const SignInPage = () => {
         </button>
       </div>
     </div>
-
   );
 };
 
