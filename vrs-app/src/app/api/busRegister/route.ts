@@ -3,25 +3,22 @@ import { pool } from '../../../lib/mysql';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
-  const { name, surname, email, password, dob, phone } = await request.json();
-  
-
-  if (!name || !surname || !email || !password || !dob || !phone) {
+  const { name, surname, email, password,phone, businessName, industry, businessCity, businessAddress } = await request.json();
+  if (!name || !surname || !email || !password || !phone || !businessName || !industry || !businessCity || !businessAddress) {
     return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
   }
-
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.execute(
       `INSERT INTO users (email, password, isBusiness) VALUES (?, ?, ?)`,
-      [email, hashedPassword, 0]
+      [email, hashedPassword, true]
     );
 
     const [result] = await pool.execute(
-      `INSERT INTO customer (CustomerName, CustomerSurname, CustomerEmail, CustomerPassword, DateOfBirth, CustomerPhone)
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, surname, email, hashedPassword, dob, phone]
+      `INSERT INTO seller (BusinessName, Industry, ContactPersonName, ContactPersonSurname, BusinessEmail, BusinessPhone, BusinessCity, BusinessAddress, Password)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [businessName, industry, name, surname, email, phone, businessCity, businessAddress, password]
     );
 
     return NextResponse.json({ message: 'Registration successful', result }, { status: 200 });

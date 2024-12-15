@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { signIn } from "next-auth/react";
-import { useRouter } from 'next/navigation'; // Import from next/navigation instead of next/router for App Router
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import './registration.css';
 
 const Registration = () => {
@@ -15,7 +16,7 @@ const Registration = () => {
     phone: ''
   });
 
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,7 +25,7 @@ const Registration = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const response = await fetch('/api/register', {
       method: 'POST',
       headers: {
@@ -37,7 +38,6 @@ const Registration = () => {
 
     if (response.ok) {
       console.log('Registration successful:', result);
-      // Redirect to signin page
       router.push('/signin');
     } else {
       console.error('Registration failed:', result);
@@ -95,7 +95,12 @@ const Registration = () => {
         </div>
 
         <button className="googleButton" onClick={() => signIn('google', { callbackUrl: "/" })}>
-          <img src="/google_PNG.png" alt="Google Icon" className="googleIcon" />
+          <Image
+            src="/google_PNG.png"
+            alt="Google Icon"
+            width={28}
+            height={28}
+          />
           Sign in with Google
         </button>
 

@@ -71,10 +71,6 @@
     margin-left: auto;
     text-decoration: none;
 }
-.googleIcon{
-    width: 28px;
-    height: 28px;
-}
 .formGroup label {
     display: flex;
     align-items: center;

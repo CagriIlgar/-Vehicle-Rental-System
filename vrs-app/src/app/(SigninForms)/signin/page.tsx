@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import './signin.css';
 
 const SignInPage = () => {
@@ -14,7 +15,6 @@ const SignInPage = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Use next-auth's signIn method for email/password login
     const response = await signIn('credentials', {
       redirect: false,
       email,
@@ -75,7 +75,13 @@ const SignInPage = () => {
           <span>or</span>
         </div>
         <button className="googleButton" onClick={() => signIn('google', { callbackUrl: "/" })}>
-          <img src="/google_PNG.png" alt="Google Icon" className="googleIcon" />
+          <Image
+            src="/google_PNG.png"
+            alt="Google Icon"
+            className="googleIcon"
+            width={28}
+            height={28}
+          />
           Sign in with Google
         </button>
       </div>

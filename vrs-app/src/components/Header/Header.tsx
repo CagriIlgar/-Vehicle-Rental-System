@@ -6,7 +6,7 @@ import "../Header/header.css";
 
 const Header: React.FC = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session} = useSession();
 
   const handleLoginClick = () => {
     router.push("/signin");

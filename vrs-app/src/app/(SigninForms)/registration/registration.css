@@ -42,10 +42,6 @@
     font-size: 14px;
     color: var(--darkBlue);
 }
-.googleIcon{
-    width: 28px;
-    height: 28px;
-}
 .formGroup {
     width: 100%;
     margin-top: 10px;

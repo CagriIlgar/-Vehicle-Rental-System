@@ -17,7 +17,6 @@ interface Car {
   location: string;
 }
 
-
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession();
   const [isBusinessProfile, setIsBusinessProfile] = useState<boolean>(false);
@@ -41,7 +40,6 @@ const ProfilePage: React.FC = () => {
     setBusinessCars([...businessCars, newCar]);
     e.currentTarget.reset();
   };
-  
 
   if (status === "loading") {
     return <p className="loading-text">Loading...</p>;
@@ -61,7 +59,9 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="profile-container">
       <div className="user-info">
-        <h1 className="profile-header">Profile Page</h1>
+        <h1 className="profile-header">
+          {session.user?.businessPhone ? "Welcome Business" : "Welcome Customer"}
+        </h1>
         {session.user?.image && (
           <img
             src={session.user.image}
@@ -70,10 +70,9 @@ const ProfilePage: React.FC = () => {
           />
         )}
         <p className="user-greeting">
-          Welcome, <strong>{session.user?.name || "User"}</strong>!
+          Welcome, <strong>{session.user?.businessPhone}</strong>!
         </p>
       </div>
-
 
       <div className="profile-toggle">
         <label className="business-checkbox-label">
@@ -190,4 +189,4 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-export default ProfilePage;
+export default ProfilePage; 

@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import "../Card/card.css";
+import Image from "next/image";
 
 type CardProps = {
     image: string;
@@ -22,6 +23,7 @@ const Card: React.FC<CardProps> = ({ image, title, navigateTo }) => {
     return (
         <div className="card">
             <h2 className="card-title">{title}</h2>
+            
             <img src={image} alt={title} className="card-img" />
             <button className="card-button" onClick={handleButtonClick}>
                 VIEW ALL!
