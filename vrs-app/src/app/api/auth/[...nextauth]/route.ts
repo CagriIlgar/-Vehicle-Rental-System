@@ -81,6 +81,9 @@ const authOptions: NextAuthOptions = {
       if (user?.surname) {
         token.surname = user.surname;
       }
+      if (user?.isBusiness){
+        token.isBusiness = user.isBusiness;
+      }
       if (user?.isBusiness && user.businessPhone) {
         token.businessPhone = user.businessPhone;
       }
@@ -92,6 +95,9 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token.surname) {
         session.user.surname = token.surname as string;
+      }
+      if(token.isBusiness){
+        session.user.isBusiness = token.isBusiness as boolean;
       }
       if (token.businessPhone) {
         session.user.businessPhone = token.businessPhone as string;

@@ -60,7 +60,7 @@ const ProfilePage: React.FC = () => {
     <div className="profile-container">
       <div className="user-info">
         <h1 className="profile-header">
-          {session.user?.businessPhone ? "Welcome Business" : "Welcome Customer"}
+          {session.user?.isBusiness? "Welcome Business" : "Welcome Customer"}
         </h1>
         {session.user?.image && (
           <img
