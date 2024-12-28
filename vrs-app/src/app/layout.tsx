@@ -2,7 +2,7 @@
 
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/Header/Header";
-import "../app/globals.css";
+import "../styles/globals.css";
 import { usePathname } from "next/navigation";
 
 export default function RootLayout({

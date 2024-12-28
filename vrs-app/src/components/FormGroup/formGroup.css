@@ -1,0 +1,34 @@
+@import url("../../styles/colors.css");
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 16px;
+  color: var(--light);
+  text-align: left;
+}
+
+.form-group input,
+.form-group select{
+  height: 40px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--dark);
+  border-radius: 5px;
+}
+
+.form-group input[type=file]  {
+  border: none;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  color: black;
+}
+
+input[type="file"] {
+  color: red;
+}

@@ -3,7 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import "../Card/card.css";
-import Image from "next/image";
 
 type CardProps = {
     image: string;

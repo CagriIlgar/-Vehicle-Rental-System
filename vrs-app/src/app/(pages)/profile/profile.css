@@ -1,4 +1,4 @@
-@import url("../../styles/colors.css");
+@import url("../../../styles/colors.css");
 
 .profile-container {
   color: var(--dark);
@@ -81,18 +81,30 @@
 .sign-out-btn {
   background-color: var(--red);
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-top: 30px;
+  width: 5%;
+  transition: background-color 0.3s;
+}
+
+.sign-out-btn:hover {
+  background-color: rgb(118, 1, 1);
+}
+
+.add-car-btn {
+  background-color: var(--secondary);
+  color: black;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   margin-top: 30px;
-  width: 100%;
+  width: 30%;
   transition: background-color 0.3s;
-}
-
-.sign-out-btn:hover {
-  background-color: rgb(118, 1, 1);
 }
 
 .loading-text {
@@ -123,29 +135,6 @@
   color: var(--light);
 }
 
-.business-section {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 30px;
-}
-
-.car-form {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
-  background-color: var(--primary);
-  border-radius: 10px;
-  box-shadow: 0 0 5px var(--light);
-  width: 300px;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .business-cars-list {
   flex: 1;
   display: flex;
@@ -173,39 +162,6 @@
   font-size: 24px;
   color: var(--yellow);
   margin-bottom: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.form-group label {
-  font-size: 16px;
-  color: var(--light);
-}
-
-.form-group input {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid var(--secondary);
-  border-radius: 5px;
-}
-
-.submit-btn {
-  background-color: var(--green);
-  color: var(--light);
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.submit-btn:hover {
-  background-color: var(--secondary);
 }
 
 .business-title {

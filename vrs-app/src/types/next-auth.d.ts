@@ -6,6 +6,10 @@ declare module "next-auth" {
     isBusiness?: boolean;
     businessPhone?: string;
     businessCity?: string;
+    id?: string;
+    sellerId?: string;
+    approved?: boolean;
+    businessName? : string;
   }
 
   interface Session {

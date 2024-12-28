@@ -34,13 +34,8 @@ const Registration = () => {
       body: JSON.stringify(formData),
     });
 
-    const result = await response.json();
-
     if (response.ok) {
-      console.log('Registration successful:', result);
       router.push('/signin');
-    } else {
-      console.error('Registration failed:', result);
     }
   };
 
@@ -51,34 +46,34 @@ const Registration = () => {
         <h2>Registration Form</h2>
         <p>Fill out the form carefully for registration</p>
         <form onSubmit={handleSubmit}>
-          <div className="formGroup">
+          <div className="input-form">
             <label>Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
+            <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" required/>
           </div>
 
-          <div className="formGroup">
+          <div className="input-form">
             <label>Surname</label>
-            <input type="text" name="surname" value={formData.surname} onChange={handleChange} placeholder="Surname" />
+            <input type="text" name="surname" value={formData.surname} onChange={handleChange} placeholder="Surname" required/>
           </div>
 
-          <div className="formGroup">
+          <div className="input-form">
             <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="example@cyrent.com" />
+            <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="example@cyrent.com" required/>
           </div>
 
-          <div className="formGroup">
+          <div className="input-form">
             <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" value={formData.password} onChange={handleChange} />
+            <input id="password" name="password" type="password" value={formData.password} onChange={handleChange} required/>
           </div>
 
-          <div className="formGroup">
+          <div className="input-form">
             <label>Date of Birth</label>
-            <input name="dob" type="date" value={formData.dob} onChange={handleChange} />
+            <input name="dob" type="date" value={formData.dob} onChange={handleChange} required/>
           </div>
 
-          <div className="formGroup">
+          <div className="input-form">
             <label>Phone Number</label>
-            <input name="phone" type="text" value={formData.phone} onChange={handleChange} placeholder="(533) *** ** **" />
+            <input name="phone" type="text" value={formData.phone} onChange={handleChange} placeholder="(533) *** ** **" required/>
           </div>
 
           <button className="registerButton" type="submit">
@@ -86,7 +81,7 @@ const Registration = () => {
           </button>
         </form>
 
-        <div className="formGroup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="input-form" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="signin" className="returnToLoginBtn">Return to login</a>
         </div>
 

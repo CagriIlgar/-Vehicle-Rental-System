@@ -20,16 +20,15 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .formGrid {
+  .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     column-gap: 15px;
     row-gap: 5px;
   }
   
-  .formGroup {
-    display: flex;
-    flex-direction: column;
+  .input-form {
+    margin-top: 10px;
   }
   
   .registerButton {

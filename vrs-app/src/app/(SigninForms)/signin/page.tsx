@@ -14,17 +14,14 @@ const SignInPage = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
     const response = await signIn('credentials', {
       redirect: false,
       email,
       password,
     });
-
     if (response?.error) {
       setErrorMessage(response.error);
     } else {
-      alert('Login successful!');
       router.push('/');
     }
   };
@@ -46,7 +43,6 @@ const SignInPage = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-
         <div className="formGroup">
           <label htmlFor="password">Password</label>
           <input
@@ -56,9 +52,7 @@ const SignInPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
         {errorMessage && <div className="error">{errorMessage}</div>}
-
         <div className="formGroup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <label>
             <input type="checkbox" />

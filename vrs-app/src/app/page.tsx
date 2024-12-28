@@ -1,6 +1,7 @@
 
 import React from "react";
 import Card from "../components/Card/Card";
+import "../styles/home.css";
 
 const HomePage: React.FC = () => {
     return (
@@ -12,7 +13,7 @@ const HomePage: React.FC = () => {
         >
             <div className="home-info">
                 <br />
-                <h1 className="title">Welcome to CyRent</h1>
+                <h1 className="home-title">Welcome to CyRent</h1>
                 <p className="intro-text">
                     Discover a wide range of vehicles to suit your needs. Whether
                     you’re looking for cars, motorcycles, scooters, or even boats,
@@ -25,7 +26,7 @@ const HomePage: React.FC = () => {
             <div className="relative z-10">
                 <div className="row">
                     <Card image="/home-car.png" title="CARS" navigateTo="/vehicles/cars" />
-                    <Card image="/home-motor.png" title="MOTORCYCLES" navigateTo="/vehicles/motorcycles" />
+                    <Card image="/home-motor.png" title="MOTORCYCLES" navigateTo="/vehicles/motorcycles"/>
                     <Card image="/home-boat.png" title="BOATS" navigateTo="/vehicles/boats" />
                 </div>
                 <div className="row">

@@ -26,24 +26,25 @@ const authOptions: NextAuthOptions = {
           "SELECT * FROM users WHERE email = ?",
           [credentials.email]
         );
-      
+
         if (rows.length === 0) {
           throw new Error("No user found with the provided email");
         }
-      
+
         const user = rows[0];
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-        
+
         if (!isPasswordValid) {
           throw new Error("Invalid password");
         }
-      
+
         if (user.isBusiness === 1) {
           const [sellerRows]: any[] = await pool.execute(
             "SELECT * FROM seller WHERE BusinessEmail = ?",
             [user.email]
           );
           const seller = sellerRows[0];
+          console.log("Seller found:", seller);
           return {
             id: seller.SellerID,
             name: seller.ContactPersonName,
@@ -52,9 +53,10 @@ const authOptions: NextAuthOptions = {
             isBusiness: true,
             businessPhone: seller.BusinessPhone,
             businessCity: seller.BusinessCity,
+            approved: seller.Approved,
+            businessName: seller.BusinessName
           };
         }
-      
         const [customerRows]: any[] = await pool.execute(
           "SELECT * FROM customer WHERE CustomerEmail = ?",
           [user.email]
@@ -81,8 +83,11 @@ const authOptions: NextAuthOptions = {
       if (user?.surname) {
         token.surname = user.surname;
       }
-      if (user?.isBusiness){
+      if (user?.isBusiness) {
         token.isBusiness = user.isBusiness;
+      }
+      if (user?.id) {
+        token.id = user.id;
       }
       if (user?.isBusiness && user.businessPhone) {
         token.businessPhone = user.businessPhone;
@@ -90,13 +95,21 @@ const authOptions: NextAuthOptions = {
       if (user?.isBusiness && user.businessCity) {
         token.businessCity = user.businessCity;
       }
+      if (user?.isBusiness && user.approved) {
+        token.approved = user.approved;
+      }
+      if (user?.isBusiness && user.businessName) {
+        token.businessName = user.businessName;
+      }
+      console.log("Token after JWT callback:", token);
       return token;
-    },
+    }
+    ,
     async session({ session, token }) {
       if (token.surname) {
         session.user.surname = token.surname as string;
       }
-      if(token.isBusiness){
+      if (token.isBusiness) {
         session.user.isBusiness = token.isBusiness as boolean;
       }
       if (token.businessPhone) {
@@ -105,6 +118,16 @@ const authOptions: NextAuthOptions = {
       if (token.businessCity) {
         session.user.businessCity = token.businessCity as string;
       }
+      if (token.id) {
+        session.user.id = token.id as string;
+      }
+      if (token.approved) {
+        session.user.approved = token.approved as boolean;
+      }
+      if (token.businessName) {
+        session.user.businessName = token.businessName as string;
+      }
+      console.log("Session after Session callback:", session);
       return session;
     },
   },

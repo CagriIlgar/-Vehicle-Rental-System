@@ -42,7 +42,7 @@
     font-size: 14px;
     color: var(--darkBlue);
 }
-.formGroup {
+.input-form{
     width: 100%;
     margin-top: 10px;
 }

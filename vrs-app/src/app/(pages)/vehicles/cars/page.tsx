@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import VehicleCard from '../../../components/VehicleCard/VehicleCard';
+import VehicleCard from '../../../../components/VehicleCard/VehicleCard';
 import './cars.css';
 
 interface Vehicle {
   VehicleID: number;
+  Brand: string;
   Model: string;
   Type: string;
   Photo: string;
@@ -29,13 +30,18 @@ const Cars: React.FC = () => {
     const fetchVehicles = async () => {
       try {
         const res = await fetch('/api/vehicles');
-        
+
         if (!res.ok) {
           throw new Error(`Failed to fetch vehicles: ${res.statusText}`);
         }
-        
+
         const data = await res.json();
-        setVehicles(data);
+
+        if (Array.isArray(data.vehicles)) {
+          setVehicles(data.vehicles);
+        } else {
+          throw new Error('Invalid response format: vehicles data is not an array');
+        }
       } catch (error: unknown) {
         if (error instanceof Error) {
           setError(`Error: ${error.message}`);
@@ -66,7 +72,8 @@ const Cars: React.FC = () => {
         {vehicles.map((vehicle) => (
           <VehicleCard
             key={vehicle.VehicleID}
-            image={`data:image/jpeg;base64,${vehicle.Photo}`}
+            brand={vehicle.Brand}
+            image={vehicle.Photo}
             model={vehicle.Model}
             type={vehicle.Type}
             price={vehicle.PricePerDay}

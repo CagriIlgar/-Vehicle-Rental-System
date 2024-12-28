@@ -1,0 +1,36 @@
+.add-vehicle-container {
+  padding: 20px;
+  width: 70%;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.car-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 20px;
+  background-color: var(--primary);
+  border-radius: 10px;
+  box-shadow: 0 0 5px var(--light);
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.submit-btn {
+  grid-column: span 3;
+  background-color: var(--green);
+  color: var(--light);
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: green;
+}
