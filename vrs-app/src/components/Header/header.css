@@ -9,15 +9,18 @@
 }
 header {
   display: flex;
+  flex-wrap: wrap;
   width: 75%;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
 }
 header .logo {
+  cursor: pointer;
   font-size: 40px;
   font-weight: bold;
   color: var(--secondary);
+  width: 204px;
 }
 nav {
   display: flex;
@@ -29,10 +32,10 @@ nav .nav-link {
   color: var(--light);
   font-size: 16px;
   transition: color 0.3s;
-  margin: 0 10px;
   background: none;
   border: none;
   cursor: pointer;
+  margin: 0 10px;
 }
 nav .nav-link:hover {
   color: var(--secondary);
@@ -63,6 +66,9 @@ button.profile {
   height: 38px;
   color: var(--dark);
 }
+.profile-div {
+  width: 204px;
+}
 button.get-started:hover,
 button.profile:hover {
   background-color: var(--secondary);
@@ -76,7 +82,7 @@ button.get-started-placeholder {
   width: 113px;
   height: 38px;
 }
-.navBar {
+.nav-bar {
   border: 1px solid var(--light);
   border-radius: 30px;
   width: 316px;
@@ -84,4 +90,31 @@ button.get-started-placeholder {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  header {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+  header .logo {
+    width: auto;
+    font-size: 32px;
+    margin-bottom: 1rem;
+  }
+  nav {
+    width: 100%;
+    justify-content: space-around;
+  }
+  .nav-link {
+    font-size: 14px;
+  }
+  .actions {
+    margin-top: 5px;
+  }
+  .profile-div {
+    margin-top: 5px;
+    width: 100%;
+  }
 }

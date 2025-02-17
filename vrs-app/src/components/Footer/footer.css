@@ -1,0 +1,54 @@
+@import url("../../styles/colors.css");
+
+.footer {
+    background-color: var(--primary);
+    color: white;
+    padding: 80px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logo h2 {
+    color: var(--light);
+    font-size: 24px;
+    margin: 0;
+}
+
+.links ul,
+.socials ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.links li,
+.socials li {
+    display: inline;
+    margin: 0 10px;
+}
+
+.links a,
+.socials a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.links a:hover,
+.socials a:hover {
+    text-decoration: underline;
+}
+
+.copy {
+    margin-top: 20px;
+    font-size: 14px;
+    border-top: 1px solid #34495e;
+    padding-top: 10px;
+}

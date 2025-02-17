@@ -6,7 +6,7 @@ import "../Header/header.css";
 
 const Header: React.FC = () => {
   const router = useRouter();
-  const { data: session} = useSession();
+  const { data: session } = useSession();
 
   const handleLoginClick = () => {
     router.push("/signin");
@@ -14,32 +14,35 @@ const Header: React.FC = () => {
   const handleGetStartedClick = () => {
     router.push("/registration");
   };
-
   const handleProfileClick = () => {
     router.push("/profile");
   };
-
   const handleNavClick = (path: string) => {
     router.push(path);
+  };
+  const handleLogoClick = () => {
+    router.push("/");
   };
 
   return (
     <Suspense fallback={<div className="header-container">Loading...</div>}>
       <div className="header-container">
         <header>
-          <div className="logo">CyRent</div>
-          <div className="navBar">
+          <div className="logo" onClick={handleLogoClick}>CyRent</div>
+          <div className="nav-bar">
             <nav>
               <button className="nav-link" onClick={() => handleNavClick("/")}>HOME</button>
-              <button className="nav-link" onClick={() => handleNavClick("/about")}>ABOUT US</button>
+              <button className="nav-link" onClick={() => handleNavClick("/about")}>ABOUT</button>
               <button className="nav-link" onClick={() => handleNavClick("/contact")}>CONTACT</button>
             </nav>
           </div>
           <div className="actions">
             {session ? (
-              <button className="profile" onClick={handleProfileClick}>
-                Profile
-              </button>
+              <div className="profile-div">
+                <button className="profile" onClick={handleProfileClick}>
+                  Profile
+                </button>
+              </div>
             ) : (
               <>
                 <button className="login" onClick={handleLoginClick}>

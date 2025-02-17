@@ -1,0 +1,36 @@
+.vehicles-container {
+    display: flex;
+    margin: 20px auto;
+    padding: 20px;
+
+}
+.filter-sidebar {
+    border-radius: 8px;
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    margin-right: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.filter-sidebar label {
+    display: block;
+    margin-bottom: 10px;
+}
+.vehicles-list select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 20px;
+}
+.vehicles-list {
+    flex-grow: 1;
+}
+
+.filter-sidebar h3{
+    color: black;
+    font-size: 20px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+.filter-sidebar label input{
+    margin-right: 5px;  
+}

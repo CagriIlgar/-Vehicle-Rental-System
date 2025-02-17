@@ -10,6 +10,9 @@ declare module "next-auth" {
     sellerId?: string;
     approved?: boolean;
     businessName? : string;
+    isAdmin? : boolean;
+    latitude?: number;
+    longitude?: number; 
   }
 
   interface Session {
