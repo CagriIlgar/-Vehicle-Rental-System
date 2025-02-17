@@ -1,25 +1,16 @@
-'use client';
-
-import { SessionProvider } from "next-auth/react";
-import Header from "@/components/Header/Header";
+import Providers from "./providers";
 import "../styles/globals.css";
-import { usePathname } from "next/navigation";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  const hideHeader = pathname === "/signin" || pathname === "/registration" || pathname === "/businessRegs";
+export const metadata = {
+  title: "CyRent",
+  description: "Best rent a vehicle system in Cyprus",
+};
 
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <SessionProvider>
-          {!hideHeader && <Header />}
-          <main>{children}</main>
-        </SessionProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

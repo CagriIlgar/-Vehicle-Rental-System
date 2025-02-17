@@ -22,6 +22,31 @@ const authOptions: NextAuthOptions = {
           throw new Error("Email and password are required");
         }
 
+        // Admin Login Handling
+        // ------------------------------------------------
+        const [adminRows]: any[] = await pool.execute(
+          "SELECT * FROM admin WHERE AdminEmail = ?",
+          [credentials.email]
+        );
+
+        if (adminRows.length > 0) {
+          const admin = adminRows[0];
+          // Direct password comparison since admin passwords are not encrypted
+          if (credentials.password !== admin.AdminPassword) {
+            throw new Error("Invalid admin password");
+          }
+
+          // Return Admin User Data
+          return {
+            id: admin.AdminID,
+            name: admin.AdminName,
+            email: admin.AdminEmail,
+            isAdmin: true, // Custom flag to identify admin users
+          };
+        }
+        // ------------------------------------------------
+
+        // Regular User Login Handling
         const [rows]: any[] = await pool.execute(
           "SELECT * FROM users WHERE email = ?",
           [credentials.email]
@@ -44,7 +69,6 @@ const authOptions: NextAuthOptions = {
             [user.email]
           );
           const seller = sellerRows[0];
-          console.log("Seller found:", seller);
           return {
             id: seller.SellerID,
             name: seller.ContactPersonName,
@@ -54,9 +78,12 @@ const authOptions: NextAuthOptions = {
             businessPhone: seller.BusinessPhone,
             businessCity: seller.BusinessCity,
             approved: seller.Approved,
-            businessName: seller.BusinessName
+            businessName: seller.BusinessName,
+            latitude: seller.Latitude,
+            longitude: seller.Longitude,
           };
         }
+
         const [customerRows]: any[] = await pool.execute(
           "SELECT * FROM customer WHERE CustomerEmail = ?",
           [user.email]
@@ -101,11 +128,23 @@ const authOptions: NextAuthOptions = {
       if (user?.isBusiness && user.businessName) {
         token.businessName = user.businessName;
       }
+      if (user?.isBusiness && user.latitude) {
+        token.latitude = user.latitude;
+      }
+      if (user?.isBusiness && user.longitude) {
+        token.longitude = user.longitude;
+      }
+
+      // Add isAdmin to JWT token
+      if (user?.isAdmin) {
+        token.isAdmin = user.isAdmin;
+      }
+
       console.log("Token after JWT callback:", token);
       return token;
-    }
-    ,
+    },
     async session({ session, token }) {
+      
       if (token.surname) {
         session.user.surname = token.surname as string;
       }
@@ -127,6 +166,19 @@ const authOptions: NextAuthOptions = {
       if (token.businessName) {
         session.user.businessName = token.businessName as string;
       }
+      if (token.latitude) {
+        session.user.latitude = token.latitude as number;
+      }
+      if (token.longitude) {
+        session.user.longitude = token.longitude as number;
+      }
+  
+
+      // Add isAdmin to session
+      if (token.isAdmin) {
+        session.user.isAdmin = token.isAdmin as boolean;
+      }
+
       console.log("Session after Session callback:", session);
       return session;
     },

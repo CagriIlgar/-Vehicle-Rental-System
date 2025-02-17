@@ -30,7 +30,10 @@ async function webStreamToNodeReadable(webStream: ReadableStream<Uint8Array>) {
 
 export async function GET(req: NextRequest) {
   try {
-    const [vehicles]: any[] = await pool.execute(`
+    const url = new URL(req.url);
+    const sellerId = url.searchParams.get("sellerId");
+
+    let query = `
       SELECT 
         v.VehicleID, 
         v.Type, 
@@ -52,7 +55,16 @@ export async function GET(req: NextRequest) {
         s.ContactPersonSurname as SellerSurname
       FROM vehicle v
       LEFT JOIN seller s ON v.SellerID = s.SellerID
-    `);
+    `;
+
+    const params: any[] = [];
+
+    if (sellerId) {
+      query += " WHERE v.SellerID = ?";
+      params.push(sellerId);
+    }
+
+    const [vehicles]: any[] = await pool.execute(query, params);
 
     return NextResponse.json({ vehicles });
   } catch (error: unknown) {
@@ -105,7 +117,7 @@ export async function POST(req: NextRequest) {
       vehicleYear: year = '',
       vehicleFuelType: fuelType = '',
       transmission = '',
-      vehicleSeats: seats = '', 
+      vehicleSeats: seats = '',
       vehiclePrice: pricePerDay = '',
       vehicleAvailability: availability = '',
       vehicleColor: color = '',
@@ -118,8 +130,8 @@ export async function POST(req: NextRequest) {
 
     const [result]: any = await pool.execute(
       `INSERT INTO vehicle 
-         (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, Location, SellerID) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, Location, SellerID) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 
       [
         type || null,
@@ -151,3 +163,30 @@ export async function POST(req: NextRequest) {
   }
 }
 
+//Delete vehicle
+export async function DELETE(req: NextRequest) {
+  try {
+    const { vehicleID } = await req.json(); // Parse the JSON body
+
+    if (!vehicleID) {
+      return NextResponse.json({ message: 'Vehicle ID is required.' }, { status: 400 });
+    }
+
+    const [result]: any = await pool.execute(
+      `DELETE FROM vehicle WHERE VehicleID = ?`,
+      [vehicleID]
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json({ message: 'No vehicle found with the given ID' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Vehicle deleted successfully' }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('Error in DELETE:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ message: 'Failed to delete vehicle', error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+  }
+}
