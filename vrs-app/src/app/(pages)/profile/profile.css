@@ -86,7 +86,7 @@
   cursor: pointer;
   font-size: 15px;
   margin-top: 30px;
-  width: 5%;
+  width: 100px;
   transition: background-color 0.3s;
 }
 
@@ -166,4 +166,8 @@
 
 .business-title {
   color: var(--secondary);
+}
+.vehicle-photo{
+  width: 164px;
+  height: 164px;
 }

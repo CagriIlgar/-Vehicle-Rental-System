@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormGroup from "../../../components/FormGroup/FormGroup";
 import "./addVehicle.css";
+import ClientLayout from "@/app/client-layout";
 
 const AddVehicle: React.FC = () => {
   const { data: session, status } = useSession();
@@ -47,61 +48,61 @@ const AddVehicle: React.FC = () => {
   if (status === "unauthenticated" || !session?.user?.isBusiness) return null;
 
   return (
-    <div className="add-vehicle-container">
-      <h1>Add a New Vehicle</h1>
-      <form
-        className="car-form"
-        onSubmit={handleAddCar}
-        ref={formRef}
-        encType="multipart/form-data"
-      >
-        <FormGroup
-          label="Type:"
-          id="vehicleType"
-          name="vehicleType"
-          type="select"
-          required
-          options={["Car", "Boat", "Bicycle", "Motorcycle", "Scooter"]}
-        />
-        <FormGroup label="Brand:" id="vehicleBrand" name="vehicleBrand" type="text" required />
-        <FormGroup label="Model:" id="vehicleModel" name="vehicleModel" type="text" required />
-        <FormGroup label="Year:" id="vehicleYear" name="vehicleYear" type="number" required />
-        <FormGroup
-          label="Fuel Type:"
-          id="vehicleFuelType"
-          name="vehicleFuelType"
-          type="select"
-          required
-          options={["Petrol", "Diesel", "Electric", "Hybrid"]}
-        />
-        <FormGroup
-          label="Transmission:"
-          id="transmission"
-          name="transmission"
-          type="select"
-          required
-          options={["Automatic", "Manual", "Semi-Automatic"]}
-        />
-        <FormGroup label="Seats:" id="vehicleSeats" name="vehicleSeats" type="number" required />
-        <FormGroup label="Price per Day:" id="vehiclePrice" name="vehiclePrice" type="number" required />
-        <FormGroup label="Photo:" id="vehiclePhoto" name="vehiclePhoto" type="file" accept="image/*" required />
-        <FormGroup
-          label="Availability Status:"
-          id="vehicleAvailability"
-          name="vehicleAvailability"
-          type="select"
-          required
-          options={["Available", "Rented", "Maintenance"]}
-        />
-        <FormGroup label="Large Bag:" id="largeBar" name="largeBar" type="text" required />
-        <FormGroup label="Vehicle Color:" id="vehicleColor" name="vehicleColor" type="text" required />
-        <FormGroup label="Info:" id="info" name="info" type="text" required />
-        <FormGroup label="Contact Person Phone:" id="contact" name="contact" type="text" required />
-        <FormGroup label="Location:" id="vehicleLocation" name="vehicleLocation" type="text" required />
+    <ClientLayout>
+      <div className="add-vehicle-container">
+        <h1>Add a New Vehicle</h1>
+        <form
+          className="car-form"
+          onSubmit={handleAddCar}
+          ref={formRef}
+          encType="multipart/form-data"
+        >
+          <FormGroup
+            label="Type:"
+            id="vehicleType"
+            name="vehicleType"
+            type="select"
+            required
+            options={["Car", "Boat", "Bicycle", "Motorcycle", "Scooter"]}
+          />
+          <FormGroup label="Brand:" id="vehicleBrand" name="vehicleBrand" type="text"/>
+          <FormGroup label="Model:" id="vehicleModel" name="vehicleModel" type="text"/>
+          <FormGroup label="Year:" id="vehicleYear" name="vehicleYear" type="number"/>
+          <FormGroup
+            label="Fuel Type:"
+            id="vehicleFuelType"
+            name="vehicleFuelType"
+            type="select"
+            options={["Petrol", "Diesel", "Electric", "Hybrid"]}
+          />
+          <FormGroup
+            label="Transmission:"
+            id="transmission"
+            name="transmission"
+            type="select"
+            options={["Automatic", "Manual", "Semi-Automatic"]}
+          />
+          <FormGroup label="Seats:" id="vehicleSeats" name="vehicleSeats" type="number"/>
+          <FormGroup label="Price per Day:" id="vehiclePrice" name="vehiclePrice" type="number"/>
+          <FormGroup label="Photo:" id="vehiclePhoto" name="vehiclePhoto" type="file" accept="image/*"/>
+          <FormGroup
+            label="Availability Status:"
+            id="vehicleAvailability"
+            name="vehicleAvailability"
+            type="select"
+            options={["Available", "Rented", "Maintenance"]}
+          />
+          <FormGroup label="Large Bag:" id="largeBar" name="largeBar" type="text"/>
+          <FormGroup label="Vehicle Color:" id="vehicleColor" name="vehicleColor" type="text"/>
+          <FormGroup label="Info:" id="info" name="info" type="text"/>
+          <FormGroup label="Contact Person Phone:" id="contact" name="contact" type="text"/>
+          <FormGroup label="Location:" id="vehicleLocation" name="vehicleLocation" type="text"/>
 
-        <button type="submit" className="submit-btn">Add Vehicle</button>
-      </form>
-    </div>
+          <button type="submit" className="submit-btn">Add Vehicle</button>
+        </form>
+      </div>
+    </ClientLayout>
+
   );
 };
 
