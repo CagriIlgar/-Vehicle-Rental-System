@@ -1,5 +1,5 @@
-"use client"
-import { FormEvent, useRef, useEffect } from "react";
+"use client";
+import { FormEvent, useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormGroup from "../../../components/FormGroup/FormGroup";
@@ -10,6 +10,8 @@ const AddVehicle: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const [locations, setLocations] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
 
   useEffect(() => {
     if (status === "authenticated" && !session?.user?.isBusiness) {
@@ -18,9 +20,31 @@ const AddVehicle: React.FC = () => {
     }
   }, [status, session, router]);
 
+  // Fetch locations based on seller ID
+  useEffect(() => {
+    const fetchLocations = async () => {
+      if (!session?.user?.id) return;
+
+      try {
+        const response = await fetch(`/api/location?sellerId=${session.user.id}`);
+        const data = await response.json();
+        if (data.locations) {
+          setLocations(data.locations);
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocations();
+  }, [session]);
+
   const handleAddCar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    if (selectedLocation) {
+      formData.append("LocationID", selectedLocation.toString());
+    }
 
     try {
       formData.append("sellerId", session?.user?.id || "");
@@ -96,13 +120,29 @@ const AddVehicle: React.FC = () => {
           <FormGroup label="Vehicle Color:" id="vehicleColor" name="vehicleColor" type="text"/>
           <FormGroup label="Info:" id="info" name="info" type="text"/>
           <FormGroup label="Contact Person Phone:" id="contact" name="contact" type="text"/>
-          <FormGroup label="Location:" id="vehicleLocation" name="vehicleLocation" type="text"/>
+          
+          <div className="form-group">
+            <label htmlFor="vehicleLocationID">Location:</label>
+            <select
+              id="vehicleLocationID"
+              name="vehicleLocationID"
+              required
+              value={selectedLocation || ''}
+              onChange={(e) => setSelectedLocation(Number(e.target.value))}
+            >
+              <option value="">Select Location</option>
+              {locations.map((location) => (
+                <option key={location.LocationID} value={location.LocationID}>
+                  {location.LocationName} ({location.City})
+                </option>
+              ))}
+            </select>
+          </div>
 
           <button type="submit" className="submit-btn">Add Vehicle</button>
         </form>
       </div>
     </ClientLayout>
-
   );
 };
 

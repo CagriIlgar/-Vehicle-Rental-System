@@ -28,61 +28,66 @@ async function webStreamToNodeReadable(webStream: ReadableStream<Uint8Array>) {
   return stream;
 }
 
+// Handler for GET request (fetch vehicles with their locations)
 export async function GET(req: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const sellerId = url.searchParams.get("sellerId");
+      const url = new URL(req.url);
+      const sellerId = url.searchParams.get("sellerId");
 
-    let query = `
-      SELECT 
-        v.VehicleID, 
-        v.Type, 
-        v.Brand, 
-        v.Model,
-        v.Year,  
-        v.FuelType, 
-        v.Transmission, 
-        v.Seats, 
-        v.PricePerDay, 
-        v.AvailabilityStatus, 
-        v.Color, 
-        v.Photo,
-        v.LargeBag,      
-        v.ImportantInfo, 
-        v.Contact,
-        v.Location,
-        s.ContactPersonName as SellerName, 
-        s.ContactPersonSurname as SellerSurname
-      FROM vehicle v
-      LEFT JOIN seller s ON v.SellerID = s.SellerID
-    `;
+      let query = `
+        SELECT 
+          v.VehicleID, 
+          v.Type, 
+          v.Brand, 
+          v.Model,
+          v.Year,  
+          v.FuelType, 
+          v.Transmission, 
+          v.Seats, 
+          v.PricePerDay, 
+          v.AvailabilityStatus, 
+          v.Color, 
+          v.Photo,
+          v.LargeBag,      
+          v.ImportantInfo, 
+          v.Contact,
+          v.LocationID,
+          l.Latitude,
+          l.Longitude,
+          s.ContactPersonName as SellerName, 
+          s.ContactPersonSurname as SellerSurname
+        FROM vehicle v
+        LEFT JOIN seller s ON v.SellerID = s.SellerID
+        LEFT JOIN location l ON v.LocationID = l.LocationID
+      `;
 
-    const params: any[] = [];
+      const params: any[] = [];
 
-    if (sellerId) {
-      query += " WHERE v.SellerID = ?";
-      params.push(sellerId);
-    }
+      if (sellerId) {
+          query += " WHERE v.SellerID = ?";
+          params.push(sellerId);
+      }
 
-    const [vehicles]: any[] = await pool.execute(query, params);
+      const [vehicles]: any[] = await pool.execute(query, params);
 
-    return NextResponse.json({ vehicles });
+      return NextResponse.json({ vehicles });
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error('Error fetching vehicles:', error.message);
-      return NextResponse.json(
-        { message: 'Failed to fetch vehicles', error: error.message },
-        { status: 500 }
-      );
-    } else {
-      console.error('An unknown error occurred:', error);
-      return NextResponse.json(
-        { message: 'Failed to fetch vehicles', error: 'Unknown error occurred' },
-        { status: 500 }
-      );
-    }
+      if (error instanceof Error) {
+          console.error('Error fetching vehicles:', error.message);
+          return NextResponse.json(
+              { message: 'Failed to fetch vehicles', error: error.message },
+              { status: 500 }
+          );
+      } else {
+          console.error('An unknown error occurred:', error);
+          return NextResponse.json(
+              { message: 'Failed to fetch vehicles', error: 'Unknown error occurred' },
+              { status: 500 }
+          );
+      }
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -123,16 +128,19 @@ export async function POST(req: NextRequest) {
       vehicleColor: color = '',
       largeBar: largeBag = '',
       info: importantInfo = '',
-      vehicleLocation: location = '',
+      vehicleLocationID: locationID = null, // Ensure default value is null if not provided
       contact = '',
+      locationId = '',
       sellerId = '',
     } = Object.fromEntries(formData);
-
+    
+    // Ensure LocationID is either set to null or a default value if not provided
+    const finalLocationID = locationID ? locationID : null;
+    
     const [result]: any = await pool.execute(
       `INSERT INTO vehicle 
-        (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, Location, SellerID) 
+        (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, LocationID, SellerID) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-
       [
         type || null,
         brand || null,
@@ -148,11 +156,11 @@ export async function POST(req: NextRequest) {
         color || null,
         importantInfo || null,
         contact || null,
-        location || null,
+        finalLocationID,  // Use the finalLocationID here
         sellerId || null,
       ]
     );
-
+    
     return NextResponse.json({ message: 'Vehicle added successfully!', vehicleId: result.insertId }, { status: 201 });
   } catch (error: unknown) {
     console.error('Error in POST:', error);

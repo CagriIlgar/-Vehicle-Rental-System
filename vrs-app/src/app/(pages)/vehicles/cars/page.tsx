@@ -26,7 +26,10 @@ interface Vehicle {
   SellerSurname: string;
   Color: string;
   Location: string;
+  Latitude: number;
+  Longitude: number;
 }
+
 
 const Cars: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -104,12 +107,13 @@ const Cars: React.FC = () => {
   const filteredVehicles = vehicles
     .filter((vehicle) =>
       vehicle.AvailabilityStatus === "Available" &&
-      vehicle.Location.toLowerCase().includes(locationQuery.toLowerCase()) &&
-      (transmission.automatic && vehicle.Transmission === "Automatic" || 
-       transmission.manual && vehicle.Transmission === "Manual" ||
-       (!transmission.automatic && !transmission.manual)) &&
+      filterByPrice(vehicle.PricePerDay) && // ✅ Apply price filter
+      (selectedColors.length === 0 || selectedColors.includes(vehicle.Color.toLowerCase())) && // ✅ Apply color filter
+      (transmission.automatic && vehicle.Transmission === "Automatic" ||
+        transmission.manual && vehicle.Transmission === "Manual" ||
+        (!transmission.automatic && !transmission.manual)) &&
       (vehicle.Brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       vehicle.Model.toLowerCase().includes(searchQuery.toLowerCase()))
+        vehicle.Model.toLowerCase().includes(searchQuery.toLowerCase()))
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -133,8 +137,11 @@ const Cars: React.FC = () => {
 
   return (
     <ClientLayout>
+
       <div className="vehicles-container">
+
         <div className="filter-sidebar">
+          <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />
           <h2>Filter by: </h2>
           <input
             type="text"
@@ -142,7 +149,7 @@ const Cars: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          
+
 
           <h3>Price per Day</h3>
           {["0-50", "50-100", "100-150", "150-200", "200+"].map(range => (
@@ -240,7 +247,6 @@ const Cars: React.FC = () => {
               />
             ))}
           </div>
-          <MapComponent center={{ lat: 35.185, lng: 33.382 }} zoom={12} />
         </div>
       </div>
     </ClientLayout>

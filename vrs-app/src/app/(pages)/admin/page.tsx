@@ -23,7 +23,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         const fetchBusinesses = async () => {
-            const response = await fetch("/api/admin/businesses");
+            const response = await fetch("/api/admin");
             const data = await response.json();
             setBusinesses(data.businesses);
         };
@@ -34,7 +34,7 @@ const AdminPage: React.FC = () => {
     }, [status]);
 
     const handleApprovalToggle = async (SellerID: number, approved: boolean) => {
-        const response = await fetch("/api/admin/businesses", {
+        const response = await fetch("/api/admin", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

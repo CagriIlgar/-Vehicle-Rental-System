@@ -27,11 +27,22 @@ interface Vehicle {
   SellerSurname: string;
 }
 
+interface Location {
+  LocationName: string;
+  LocationType: string;
+  Address: string;
+  City: string;
+  Latitude: string;
+  Longitude: string;
+}
+
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [locationData, setLocationData] = useState({
+    LocationName: "",
     LocationType: "",
     Address: "",
     City: "",
@@ -39,16 +50,34 @@ const ProfilePage: React.FC = () => {
     Longitude: "",
   });
   const [message, setMessage] = useState<string | null>(null);
+  const fetchLocations = async () => {
+    if (session && session.user) {
+      const response = await fetch(`/api/location?sellerId=${session.user.id}`);
+      const data = await response.json();
+      if (response.ok) {
+        setLocations(data.locations);
+      } else {
+        setMessage(data.message || "Failed to fetch locations.");
+      }
+    }
+  };
 
   useEffect(() => {
     if (session && session.user) {
       const fetchVehicles = async () => {
-        const response = await fetch(`/api/vehicles ? sellerId = ${ session.user.id }`);
+        const response = await fetch(`/api/vehicles?sellerId=${session.user.id}`);
         const data = await response.json();
         setVehicles(data.vehicles);
       };
 
+      const fetchLocations = async () => {
+        const response = await fetch(`/api/location?sellerId=${session.user.id}`);
+        const data = await response.json();
+        setLocations(data.locations);
+      };
+
       fetchVehicles();
+      fetchLocations();
     }
   }, [session]);
 
@@ -58,11 +87,18 @@ const ProfilePage: React.FC = () => {
   };
 
   const addLocation = async () => {
-    if (!locationData.LocationType || !locationData.Address || !locationData.City || !locationData.Latitude || !locationData.Longitude) {
+    if (
+      !locationData.LocationName ||
+      !locationData.LocationType ||
+      !locationData.Address ||
+      !locationData.City ||
+      !locationData.Latitude ||
+      !locationData.Longitude
+    ) {
       setMessage("Please fill all fields.");
       return;
     }
-
+  
     const response = await fetch("/api/location", {
       method: "POST",
       headers: {
@@ -73,14 +109,16 @@ const ProfilePage: React.FC = () => {
         ...locationData,
       }),
     });
-
+  
     const data = await response.json();
     if (response.ok) {
       setMessage("Location added successfully.");
+      fetchLocations();
     } else {
       setMessage(data.message || "Failed to add location.");
     }
   };
+  
 
   const deleteVehicle = async (vehicleId: number) => {
     try {
@@ -99,7 +137,7 @@ const ProfilePage: React.FC = () => {
         );
         alert("Vehicle deleted successfully!");
       } else {
-        alert(`Failed to delete vehicle: ${ data.message }`);
+        alert(`Failed to delete vehicle: ${data.message}`);
       }
     } catch (error) {
       console.error("Error deleting vehicle:", error);
@@ -155,59 +193,39 @@ const ProfilePage: React.FC = () => {
                 Add a Vehicle
               </button>
             </div>
-            <br />
+
             <div className="location-form">
               <h2>Add Location</h2>
-              <div>
-                <input
-                  type="text"
-                  name="LocationType"
-                  value={locationData.LocationType}
-                  onChange={handleLocationChange}
-                  placeholder="Location Type"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="Address"
-                  value={locationData.Address}
-                  onChange={handleLocationChange}
-                  placeholder="Address"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="City"
-                  value={locationData.City}
-                  onChange={handleLocationChange}
-                  placeholder="City"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="Latitude"
-                  value={locationData.Latitude}
-                  onChange={handleLocationChange}
-                  placeholder="Latitude"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="Longitude"
-                  value={locationData.Longitude}
-                  onChange={handleLocationChange}
-                  placeholder="Longitude"
-                />
-              </div>
+              <input type="text" name="LocationName" value={locationData.LocationName} onChange={handleLocationChange} placeholder="Location Name" />
+              <input type="text" name="LocationType" value={locationData.LocationType} onChange={handleLocationChange} placeholder="Location Type" />
+              <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Address" />
+              <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="City" />
+              <input type="text" name="Latitude" value={locationData.Latitude} onChange={handleLocationChange} placeholder="Latitude" />
+              <input type="text" name="Longitude" value={locationData.Longitude} onChange={handleLocationChange} placeholder="Longitude" />
               <button className="add-location-btn" onClick={addLocation}>
                 Add Location
               </button>
               {message && <p>{message}</p>}
             </div>
+
+            <div className="business-locations-list">
+              <h2 className="business-title">Your Locations</h2>
+              {locations.length === 0 ? (
+                <p className="no-locations">No locations added yet.</p>
+              ) : (
+                <div className="location-list">
+                  {locations.map((location, index) => (
+                    <div key={index} className="location-item">
+                      <p>{location.LocationName}</p>
+                      <p>{location.LocationType}</p>
+                      <p>{location.Address}, {location.City}</p>
+                      <p>Latitude: {location.Latitude}, Longitude: {location.Longitude}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="business-cars-list">
               <h2 className="business-title">Your Added Vehicles</h2>
 

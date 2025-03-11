@@ -2,7 +2,6 @@
 import "./afterPayment.css";
 import React from "react";
 
-
 const Page = () => {
     return (
         <div className="payment-success-container">

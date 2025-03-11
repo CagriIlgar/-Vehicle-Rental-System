@@ -26,6 +26,7 @@ nav {
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 nav .nav-link {
   text-decoration: none;
@@ -34,8 +35,6 @@ nav .nav-link {
   transition: color 0.3s;
   background: none;
   border: none;
-  cursor: pointer;
-  margin: 0 10px;
 }
 nav .nav-link:hover {
   color: var(--secondary);

@@ -1,19 +1,45 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+interface Vehicle {
+    VehicleID: number;
+    Latitude: number;
+    Longitude: number;
+    Brand: string;
+    Model: string;
+}
 
 interface MapComponentProps {
     center: google.maps.LatLng | google.maps.LatLngLiteral;
     zoom: number;
+    vehicles: Vehicle[];
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ center, zoom }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ center, zoom, vehicles }) => {
     const mapRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const loadMap = () => {
             if (typeof window !== "undefined" && window.google && mapRef.current) {
-                new google.maps.Map(mapRef.current, {
+                const map = new google.maps.Map(mapRef.current, {
                     center,
                     zoom,
+                });
+
+                // Loop through vehicles and add a marker for each one
+                vehicles.forEach((vehicle) => {
+                    const lat = parseFloat(vehicle.Latitude.toString());
+                    const lng = parseFloat(vehicle.Longitude.toString());
+
+                    // Ensure lat and lng are valid numbers
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        const marker = new google.maps.Marker({
+                            position: { lat, lng },
+                            map,
+                            title: `${vehicle.Brand} ${vehicle.Model}`,
+                        });
+                    } else {
+                        console.warn(`Invalid coordinates for vehicle: ${vehicle.VehicleID}`);
+                    }
                 });
             }
         };
@@ -30,9 +56,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ center, zoom }) => {
         } else {
             loadMap();
         }
-    }, [center, zoom]);
+    }, [center, zoom, vehicles]);
 
-    return <div ref={mapRef} style={{ width: "100%", height: "400px" }} />;
+    return <div ref={mapRef} style={{ width: "100%", height: "300px" }} />;
 };
 
 export default MapComponent;
