@@ -1,7 +1,10 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import VehicleCard from "../../../../components/VehicleCard/VehicleCard";
+import MapComponent from "../../../../components/Map/Map";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/vehicles.css";
 import ClientLayout from "@/app/client-layout";
 
@@ -22,6 +25,9 @@ interface Vehicle {
   SellerName: string;
   SellerSurname: string;
   Color: string;
+  Location: string;
+  Latitude: number;
+  Longitude: number;
 }
 
 const Motorcycles: React.FC = () => {
@@ -31,11 +37,10 @@ const Motorcycles: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>("price");
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [transmission, setTransmission] = useState({
-    automatic: false,
-    manual: false,
-  });
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [locationQuery, setLocationQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -43,7 +48,7 @@ const Motorcycles: React.FC = () => {
         const res = await fetch("/api/vehicles");
 
         if (!res.ok) {
-          throw new Error(`Failed to fetch vehicles: ${res.statusText}`);
+          throw new Error('Failed to fetch vehicles: ${res.statusText}');
         }
 
         const data = await res.json();
@@ -54,13 +59,7 @@ const Motorcycles: React.FC = () => {
           throw new Error("Invalid response format: vehicles data is not an array");
         }
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          setError(`Error: ${error.message}`);
-          console.error("Error fetching vehicles:", error);
-        } else {
-          setError("An unknown error occurred");
-          console.error("Unexpected error:", error);
-        }
+        setError("Error fetching vehicles.");
       } finally {
         setLoading(false);
       }
@@ -83,32 +82,68 @@ const Motorcycles: React.FC = () => {
   };
   const filterByPrice = (price: string): boolean => {
     const pricePerDay = parseFloat(price);
-    const selectedRanges = selectedPriceRanges;
-
-    if (selectedRanges.length === 0) return true;
-
-    if (selectedRanges.includes("0-50") && pricePerDay >= 0 && pricePerDay <= 50) return true;
-    if (selectedRanges.includes("50-100") && pricePerDay > 50 && pricePerDay <= 100) return true;
-    if (selectedRanges.includes("100-150") && pricePerDay > 100 && pricePerDay <= 150) return true;
-    if (selectedRanges.includes("150-200") && pricePerDay > 150 && pricePerDay <= 200) return true;
-    if (selectedRanges.includes("200+") && pricePerDay > 200) return true;
-
-    return false;
+    if (selectedPriceRanges.length === 0) return true;
+    return (
+      (selectedPriceRanges.includes("0-50") && pricePerDay <= 50) ||
+      (selectedPriceRanges.includes("50-100") && pricePerDay > 50 && pricePerDay <= 100) ||
+      (selectedPriceRanges.includes("100-150") && pricePerDay > 100 && pricePerDay <= 150) ||
+      (selectedPriceRanges.includes("150-200") && pricePerDay > 150 && pricePerDay <= 200) ||
+      (selectedPriceRanges.includes("200+") && pricePerDay > 200)
+    );
   };
 
   const filteredVehicles = vehicles
     .filter((vehicle) =>
+      vehicle.Type === "Motorcycle" &&
+      startDate && endDate &&
+      vehicle.AvailabilityStatus === "Available" &&
       filterByPrice(vehicle.PricePerDay) &&
-      (transmission.automatic && vehicle.Transmission === "Automatic" ||
-        transmission.manual && vehicle.Transmission === "Manual" ||
-        (!transmission.automatic && !transmission.manual)) &&
+      (selectedColors.length === 0 || selectedColors.includes(vehicle.Color.toLowerCase())) &&
       (vehicle.Brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
         vehicle.Model.toLowerCase().includes(searchQuery.toLowerCase()))
     )
-    .sort(handleSort);
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price":
+          return parseFloat(a.PricePerDay) - parseFloat(b.PricePerDay);
+        case "seats":
+          return b.Seats - a.Seats;
+        case "brand":
+          return a.Brand.localeCompare(b.Brand);
+        default:
+          return 0;
+      }
+    });
 
-  const handleViewDeal = (model: string) => {
-    alert(`Viewing details for ${model}`);
+  const handleViewDeal = (vehicle: Vehicle) => {
+    if (!startDate || !endDate) {
+      alert("Please select rental dates before proceeding."); //  Tarih aralığı zorunlu seçme cnm
+      return;
+    }
+
+    // tarihe göre fiyat aralığı hesaplaması 
+    const dayDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const rentalDays = dayDiff > 0 ? dayDiff : 1; // Minimum 1 gün
+
+    // total fiyat
+    const totalPrice = rentalDays * parseFloat(vehicle.PricePerDay);
+
+    //  localStorage kullandık kiralanan araç bilgileri kaydedilsin diye
+    const rentalData = {
+      VehicleID: vehicle.VehicleID,
+      Brand: vehicle.Brand,
+      Model: vehicle.Model,
+      StartDate: startDate.toISOString(),
+      EndDate: endDate.toISOString(),
+      PricePerDay: vehicle.PricePerDay,
+      TotalPrice: totalPrice,
+      Photo: vehicle.Photo,
+    };
+
+    localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
+
+    // view deal gitme yeri
+    window.location.href = "/viewDeal";
   };
 
   if (loading) return <div>Loading vehicles...</div>;
@@ -116,8 +151,11 @@ const Motorcycles: React.FC = () => {
 
   return (
     <ClientLayout>
+
       <div className="vehicles-container">
+
         <div className="filter-sidebar">
+          <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />
           <h2>Filter by: </h2>
           <input
             type="text"
@@ -125,6 +163,8 @@ const Motorcycles: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+
+
           <h3>Price per Day</h3>
           {["0-50", "50-100", "100-150", "150-200", "200+"].map(range => (
             <label key={range}>
@@ -153,36 +193,44 @@ const Motorcycles: React.FC = () => {
               {color}
             </label>
           ))}
-          <h3>Transmission</h3>
-          <label>
-            <input
-              type="checkbox"
-              checked={transmission.automatic}
-              onChange={() => setTransmission(prev => ({ ...prev, automatic: !prev.automatic }))}
-            />
-            Automatic
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={transmission.manual}
-              onChange={() => setTransmission(prev => ({ ...prev, manual: !prev.manual }))}
-            />
-            Manual
-          </label>
-
         </div>
         <div className="vehicles-list">
           <h1>Available Motorcycles</h1>
+          <input
+            type="text"
+            placeholder="Search by Location"
+            value={locationQuery}
+            onChange={(e) => setLocationQuery(e.target.value)}
+          />
           <select onChange={(e) => setSortBy(e.target.value)} value={sortBy}>
             <option value="price">Sort by Price (Low to High)</option>
             <option value="seats">Sort by Seats</option>
             <option value="brand">Sort by Brand</option>
           </select>
+          <h3>Select Rental Dates</h3>
+          <div className="date-picker">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Start Date"
+            />
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="End Date"
+            />
+          </div>
           <div>
-            {filteredVehicles
-              .filter((vehicle) => vehicle.Type === "Motorcycle")
-              .map((vehicle) => (
+            {!startDate || !endDate ? (
+              <div>Lütfen kiralama tarihlerini seçin.</div>
+            ) : (
+              filteredVehicles.map((vehicle) => (
                 <VehicleCard
                   key={vehicle.VehicleID}
                   brand={vehicle.Brand}
@@ -195,9 +243,10 @@ const Motorcycles: React.FC = () => {
                   largeBag={vehicle.LargeBag}
                   seats={vehicle.Seats}
                   seller={`${vehicle.SellerName} ${vehicle.SellerSurname}`}
-                  onViewDealClick={() => handleViewDeal(vehicle.Model)}
+                  onViewDealClick={() => handleViewDeal(vehicle)}
                 />
-              ))}
+              ))
+            )}
           </div>
         </div>
       </div>

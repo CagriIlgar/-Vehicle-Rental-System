@@ -1,7 +1,10 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import VehicleCard from "../../../../components/VehicleCard/VehicleCard";
+import MapComponent from "../../../../components/Map/Map";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/vehicles.css";
 import ClientLayout from "@/app/client-layout";
 
@@ -13,12 +16,18 @@ interface Vehicle {
   Photo: string;
   AvailabilityStatus: string;
   Seats: number;
+  Transmission: string;
+  LargeBag: string;
+  UnlimitedMileage: string;
   NormalCost: string;
   PricePerDay: string;
   Contact: string;
   SellerName: string;
   SellerSurname: string;
   Color: string;
+  Location: string;
+  Latitude: number;
+  Longitude: number;
 }
 
 const Bicycles: React.FC = () => {
@@ -29,22 +38,28 @@ const Bicycles: React.FC = () => {
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [locationQuery, setLocationQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
         const res = await fetch("/api/vehicles");
+
         if (!res.ok) {
-          throw new Error(`Failed to fetch vehicles: ${res.statusText}`);
+          throw new Error('Failed to fetch vehicles: ${res.statusText}');
         }
+
         const data = await res.json();
+
         if (Array.isArray(data.vehicles)) {
           setVehicles(data.vehicles);
         } else {
           throw new Error("Invalid response format: vehicles data is not an array");
         }
-      } catch (error) {
-        setError(error instanceof Error ? error.message : "An unknown error occurred");
+      } catch (error: unknown) {
+        setError("Error fetching vehicles.");
       } finally {
         setLoading(false);
       }
@@ -59,36 +74,76 @@ const Bicycles: React.FC = () => {
         return parseFloat(a.PricePerDay) - parseFloat(b.PricePerDay);
       case "seats":
         return b.Seats - a.Seats;
+      case "brand":
+        return a.Brand.localeCompare(b.Brand);
       default:
         return 0;
     }
   };
-
   const filterByPrice = (price: string): boolean => {
     const pricePerDay = parseFloat(price);
     if (selectedPriceRanges.length === 0) return true;
-    return selectedPriceRanges.some(range => {
-      const [min, max] = range.split("-").map(Number);
-      return max ? pricePerDay >= min && pricePerDay <= max : pricePerDay >= min;
-    });
-  };
-
-  const filterByColor = (color: string): boolean => {
-    return selectedColors.length === 0 || selectedColors.includes(color.toLowerCase());
+    return (
+      (selectedPriceRanges.includes("0-50") && pricePerDay <= 50) ||
+      (selectedPriceRanges.includes("50-100") && pricePerDay > 50 && pricePerDay <= 100) ||
+      (selectedPriceRanges.includes("100-150") && pricePerDay > 100 && pricePerDay <= 150) ||
+      (selectedPriceRanges.includes("150-200") && pricePerDay > 150 && pricePerDay <= 200) ||
+      (selectedPriceRanges.includes("200+") && pricePerDay > 200)
+    );
   };
 
   const filteredVehicles = vehicles
-    .filter(vehicle =>
+    .filter((vehicle) =>
       vehicle.Type === "Bicycle" &&
+      startDate && endDate &&
+      vehicle.AvailabilityStatus === "Available" &&
       filterByPrice(vehicle.PricePerDay) &&
-      filterByColor(vehicle.Color) &&
+      (selectedColors.length === 0 || selectedColors.includes(vehicle.Color.toLowerCase())) &&
       (vehicle.Brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
         vehicle.Model.toLowerCase().includes(searchQuery.toLowerCase()))
     )
-    .sort(handleSort);
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price":
+          return parseFloat(a.PricePerDay) - parseFloat(b.PricePerDay);
+        case "seats":
+          return b.Seats - a.Seats;
+        case "brand":
+          return a.Brand.localeCompare(b.Brand);
+        default:
+          return 0;
+      }
+    });
 
-  const handleViewDeal = (model: string) => {
-    alert(`Viewing details for ${model}`);
+  const handleViewDeal = (vehicle: Vehicle) => {
+    if (!startDate || !endDate) {
+      alert("Please select rental dates before proceeding."); //  Tarih aralığı zorunlu seçme cnm
+      return;
+    }
+
+    // tarihe göre fiyat aralığı hesaplaması 
+    const dayDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const rentalDays = dayDiff > 0 ? dayDiff : 1; // Minimum 1 gün
+
+    // total fiyat
+    const totalPrice = rentalDays * parseFloat(vehicle.PricePerDay);
+
+    //  localStorage kullandık kiralanan araç bilgileri kaydedilsin diye
+    const rentalData = {
+      VehicleID: vehicle.VehicleID,
+      Brand: vehicle.Brand,
+      Model: vehicle.Model,
+      StartDate: startDate.toISOString(),
+      EndDate: endDate.toISOString(),
+      PricePerDay: vehicle.PricePerDay,
+      TotalPrice: totalPrice,
+      Photo: vehicle.Photo,
+    };
+
+    localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
+
+    // view deal gitme yeri
+    window.location.href = "/viewDeal";
   };
 
   if (loading) return <div>Loading vehicles...</div>;
@@ -96,8 +151,11 @@ const Bicycles: React.FC = () => {
 
   return (
     <ClientLayout>
+
       <div className="vehicles-container">
+
         <div className="filter-sidebar">
+          <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />
           <h2>Filter by: </h2>
           <input
             type="text"
@@ -105,6 +163,8 @@ const Bicycles: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+
+
           <h3>Price per Day</h3>
           {["0-50", "50-100", "100-150", "150-200", "200+"].map(range => (
             <label key={range}>
@@ -136,25 +196,57 @@ const Bicycles: React.FC = () => {
         </div>
         <div className="vehicles-list">
           <h1>Available Bicycles</h1>
+          <input
+            type="text"
+            placeholder="Search by Location"
+            value={locationQuery}
+            onChange={(e) => setLocationQuery(e.target.value)}
+          />
           <select onChange={(e) => setSortBy(e.target.value)} value={sortBy}>
             <option value="price">Sort by Price (Low to High)</option>
             <option value="seats">Sort by Seats</option>
+            <option value="brand">Sort by Brand</option>
           </select>
+          <h3>Select Rental Dates</h3>
+          <div className="date-picker">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Start Date"
+            />
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="End Date"
+            />
+          </div>
           <div>
-            {filteredVehicles.map(vehicle => (
-              <VehicleCard
-                key={vehicle.VehicleID}
-                brand={vehicle.Brand}
-                image={vehicle.Photo}
-                model={vehicle.Model}
-                type={vehicle.Type}
-                price={vehicle.PricePerDay}
-                seats={vehicle.Seats}
-                seller={`${vehicle.SellerName} ${vehicle.SellerSurname}`}
-                color={vehicle.Color}
-                onViewDealClick={() => handleViewDeal(vehicle.Model)}
-              />
-            ))}
+            {!startDate || !endDate ? (
+              <div>Lütfen kiralama tarihlerini seçin.</div>
+            ) : (
+              filteredVehicles.map((vehicle) => (
+                <VehicleCard
+                  key={vehicle.VehicleID}
+                  brand={vehicle.Brand}
+                  image={vehicle.Photo}
+                  model={vehicle.Model}
+                  transmission={vehicle.Transmission}
+                  color={vehicle.Color}
+                  type={vehicle.Type}
+                  price={vehicle.PricePerDay}
+                  largeBag={vehicle.LargeBag}
+                  seats={vehicle.Seats}
+                  seller={`${vehicle.SellerName} ${vehicle.SellerSurname}`}
+                  onViewDealClick={() => handleViewDeal(vehicle)}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
