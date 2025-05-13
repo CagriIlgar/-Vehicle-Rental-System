@@ -1,3 +1,4 @@
+//api/vehicles/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '../../../lib/mysql';
 import fs from 'fs';
@@ -31,10 +32,10 @@ async function webStreamToNodeReadable(webStream: ReadableStream<Uint8Array>) {
 // Handler for GET request (fetch vehicles with their locations)
 export async function GET(req: NextRequest) {
   try {
-      const url = new URL(req.url);
-      const sellerId = url.searchParams.get("sellerId");
+    const url = new URL(req.url);
+    const sellerId = url.searchParams.get("sellerId");
 
-      let query = `
+    let query = `
         SELECT 
           v.VehicleID, 
           v.Type, 
@@ -61,30 +62,30 @@ export async function GET(req: NextRequest) {
         LEFT JOIN location l ON v.LocationID = l.LocationID
       `;
 
-      const params: any[] = [];
+    const params: any[] = [];
 
-      if (sellerId) {
-          query += " WHERE v.SellerID = ?";
-          params.push(sellerId);
-      }
+    if (sellerId) {
+      query += " WHERE v.SellerID = ?";
+      params.push(sellerId);
+    }
 
-      const [vehicles]: any[] = await pool.execute(query, params);
+    const [vehicles]: any[] = await pool.execute(query, params);
 
-      return NextResponse.json({ vehicles });
+    return NextResponse.json({ vehicles });
   } catch (error: unknown) {
-      if (error instanceof Error) {
-          console.error('Error fetching vehicles:', error.message);
-          return NextResponse.json(
-              { message: 'Failed to fetch vehicles', error: error.message },
-              { status: 500 }
-          );
-      } else {
-          console.error('An unknown error occurred:', error);
-          return NextResponse.json(
-              { message: 'Failed to fetch vehicles', error: 'Unknown error occurred' },
-              { status: 500 }
-          );
-      }
+    if (error instanceof Error) {
+      console.error('Error fetching vehicles:', error.message);
+      return NextResponse.json(
+        { message: 'Failed to fetch vehicles', error: error.message },
+        { status: 500 }
+      );
+    } else {
+      console.error('An unknown error occurred:', error);
+      return NextResponse.json(
+        { message: 'Failed to fetch vehicles', error: 'Unknown error occurred' },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -133,10 +134,10 @@ export async function POST(req: NextRequest) {
       locationId = '',
       sellerId = '',
     } = Object.fromEntries(formData);
-    
+
     // Ensure LocationID is either set to null or a default value if not provided
     const finalLocationID = locationID ? locationID : null;
-    
+
     const [result]: any = await pool.execute(
       `INSERT INTO vehicle 
         (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, LocationID, SellerID) 
@@ -160,7 +161,7 @@ export async function POST(req: NextRequest) {
         sellerId || null,
       ]
     );
-    
+
     return NextResponse.json({ message: 'Vehicle added successfully!', vehicleId: result.insertId }, { status: 201 });
   } catch (error: unknown) {
     console.error('Error in POST:', error);
@@ -194,6 +195,33 @@ export async function DELETE(req: NextRequest) {
     console.error('Error in DELETE:', error);
     if (error instanceof Error) {
       return NextResponse.json({ message: 'Failed to delete vehicle', error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+  }
+}
+export async function PUT(req: NextRequest) {
+  try {
+    const { VehicleID, Type, Brand, Model, PricePerDay, AvailabilityStatus } = await req.json();
+
+    const query = `
+      UPDATE vehicle 
+      SET Type = ?, Brand = ?, Model = ?, PricePerDay = ?, AvailabilityStatus = ?
+      WHERE VehicleID = ?
+    `;
+    
+    const params = [Type, Brand, Model, PricePerDay, AvailabilityStatus, VehicleID];
+
+    const [result]: any = await pool.execute(query, params);
+
+    if (result.affectedRows > 0) {
+      return NextResponse.json({ message: "Vehicle updated successfully" });
+    } else {
+      return NextResponse.json({ message: "Failed to update vehicle" }, { status: 400 });
+    }
+  } catch (error: unknown) {
+    console.error('Error in PUT:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ message: 'Failed to edit vehicle', error: error.message }, { status: 500 });
     }
     return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
   }

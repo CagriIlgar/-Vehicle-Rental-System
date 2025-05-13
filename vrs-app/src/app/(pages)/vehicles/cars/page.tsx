@@ -30,7 +30,6 @@ interface Vehicle {
   Longitude: number;
 }
 
-
 const Cars: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -106,9 +105,11 @@ const Cars: React.FC = () => {
 
   const filteredVehicles = vehicles
     .filter((vehicle) =>
+      vehicle.Type === "Car" &&
+      startDate && endDate &&
       vehicle.AvailabilityStatus === "Available" &&
-      filterByPrice(vehicle.PricePerDay) && // ✅ Apply price filter
-      (selectedColors.length === 0 || selectedColors.includes(vehicle.Color.toLowerCase())) && // ✅ Apply color filter
+      filterByPrice(vehicle.PricePerDay) &&
+      (selectedColors.length === 0 || selectedColors.includes(vehicle.Color.toLowerCase())) &&
       (transmission.automatic && vehicle.Transmission === "Automatic" ||
         transmission.manual && vehicle.Transmission === "Manual" ||
         (!transmission.automatic && !transmission.manual)) &&
@@ -127,10 +128,36 @@ const Cars: React.FC = () => {
           return 0;
       }
     });
-
-  const handleViewDeal = (model: string) => {
-    alert(`Viewing details for ${model}`);
-  };
+    const handleViewDeal = (vehicle: Vehicle) => {
+      if (!startDate || !endDate) {
+        alert("Please select rental dates before proceeding."); //  Tarih aralığı zorunlu seçme cnm
+        return;
+      }
+  
+      // tarihe göre fiyat aralığı hesaplaması 
+      const dayDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const rentalDays = dayDiff > 0 ? dayDiff : 1; // Minimum 1 gün
+  
+      // total fiyat
+      const totalPrice = rentalDays * parseFloat(vehicle.PricePerDay);
+  
+      //  localStorage kullandık kiralanan araç bilgileri kaydedilsin diye
+      const rentalData = {
+        VehicleID: vehicle.VehicleID,
+        Brand: vehicle.Brand,
+        Model: vehicle.Model,
+        StartDate: startDate.toISOString(),
+        EndDate: endDate.toISOString(),
+        PricePerDay: vehicle.PricePerDay,
+        TotalPrice: totalPrice,
+        Photo: vehicle.Photo,
+      };
+  
+      localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
+  
+      // view deal gitme yeri
+      window.location.href = "/viewDeal";
+    };
 
   if (loading) return <div>Loading vehicles...</div>;
   if (error) return <div>{error}</div>;
@@ -210,6 +237,7 @@ const Cars: React.FC = () => {
             <option value="seats">Sort by Seats</option>
             <option value="brand">Sort by Brand</option>
           </select>
+          
           <h3>Select Rental Dates</h3>
           <div className="date-picker">
             <DatePicker
@@ -230,22 +258,26 @@ const Cars: React.FC = () => {
             />
           </div>
           <div>
-            {filteredVehicles.map((vehicle) => (
-              <VehicleCard
-                key={vehicle.VehicleID}
-                brand={vehicle.Brand}
-                image={vehicle.Photo}
-                model={vehicle.Model}
-                transmission={vehicle.Transmission}
-                color={vehicle.Color}
-                type={vehicle.Type}
-                price={vehicle.PricePerDay}
-                largeBag={vehicle.LargeBag}
-                seats={vehicle.Seats}
-                seller={`${vehicle.SellerName} ${vehicle.SellerSurname}`}
-                onViewDealClick={() => handleViewDeal(vehicle.Model)}
-              />
-            ))}
+            {!startDate || !endDate ? (
+              <div>Lütfen kiralama tarihlerini seçin.</div>
+            ) : (
+              filteredVehicles.map((vehicle) => (
+                <VehicleCard
+                  key={vehicle.VehicleID}
+                  brand={vehicle.Brand}
+                  image={vehicle.Photo}
+                  model={vehicle.Model}
+                  transmission={vehicle.Transmission}
+                  color={vehicle.Color}
+                  type={vehicle.Type}
+                  price={vehicle.PricePerDay}
+                  largeBag={vehicle.LargeBag}
+                  seats={vehicle.Seats}
+                  seller={`${vehicle.SellerName} ${vehicle.SellerSurname}`}
+                  onViewDealClick={() => handleViewDeal(vehicle)}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
