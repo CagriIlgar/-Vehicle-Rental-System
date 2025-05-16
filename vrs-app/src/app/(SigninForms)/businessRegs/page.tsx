@@ -19,6 +19,10 @@ const BusinessRegistration = () => {
     dataProtectionAgreed: false,
   });
 
+    const handleLogoClick = () => {
+    router.push("/");
+  };
+
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -48,13 +52,13 @@ const BusinessRegistration = () => {
 
   return (
     <div className="businessRegsPageContainer">
-      <h1>CyRent</h1>
+      <div className="logo" onClick={handleLogoClick}>CyRent</div>
       <div className="registerContainer">
         <h2>Business Registration Form</h2>
         <p>Fill out the form carefully for registration</p>
         <form onSubmit={handleSubmit}>
           <div className="form-grid">
-            <div className="input-form">
+            <div className="formGroup">
               <label>Business Name</label>
               <input
                 type="text"
@@ -66,7 +70,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form">
+            <div className="formGroup">
               <label>Industry</label>
               <input
                 type="text"
@@ -78,7 +82,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form">
+            <div className="formGroup">
               <label>Contact Person Name</label>
               <input
                 type="text"
@@ -90,7 +94,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form">
+            <div className="formGroup">
               <label>Contact Person Surname</label>
               <input
                 type="text"
@@ -102,7 +106,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form">
+            <div className="formGroup">
               <label htmlFor="email">Business Email</label>
               <input
                 id="email"
@@ -115,7 +119,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form">
+            <div className="formGroup">
               <label>Business City</label>
               <input
                 type="text"
@@ -127,7 +131,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form">
+            <div className="formGroup">
               <label>Business Full Address</label>
               <input
                 type="text"
@@ -138,7 +142,7 @@ const BusinessRegistration = () => {
                 required
               />
             </div>
-            <div className="input-form">
+            <div className="formGroup">
               <label>Phone Number</label>
               <input
                 type="text"
@@ -149,7 +153,7 @@ const BusinessRegistration = () => {
                 required
               />
             </div>
-            <div className="input-form">
+            <div className="formGroup">
               <label htmlFor="password">Password</label>
               <input
                 id="password"
@@ -161,7 +165,7 @@ const BusinessRegistration = () => {
               />
             </div>
 
-            <div className="input-form" style={{ gridColumn: "span 2" }}>
+            <div className="formGroup" style={{ gridColumn: "span 2" }}>
               <label>
                 <input
                   type="checkbox"
@@ -170,11 +174,11 @@ const BusinessRegistration = () => {
                   onChange={handleChange}
                   required
                 />
-                <span style={{ color: "#7E7E7E", marginLeft: '8px' }}>Terms and Conditions Agreement</span>
+                <span style={{marginLeft: '8px' }}>Terms and Conditions Agreement</span>
               </label>
             </div>
 
-            <div className="input-form" style={{ gridColumn: "span 2" }}>
+            <div className="formGroup" style={{ gridColumn: "span 2" }}>
               <label>
                 <input
                   type="checkbox"
@@ -183,7 +187,7 @@ const BusinessRegistration = () => {
                   onChange={handleChange}
                   required
                 />
-                <span style={{ color: "#7E7E7E", marginLeft: '8px' }}>Data Protection Consent</span>
+                <span style={{marginLeft: '8px' }}>Data Protection Consent</span>
               </label>
             </div>
           </div>
@@ -194,7 +198,7 @@ const BusinessRegistration = () => {
         </form>
 
 
-        <div className="input-form" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="formGroup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <a href="/signin" className="returnToLoginBtn">Return to login</a>
         </div>
       </div>

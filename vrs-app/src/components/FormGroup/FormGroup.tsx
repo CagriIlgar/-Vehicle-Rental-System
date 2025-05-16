@@ -10,7 +10,7 @@ interface FormGroupProps {
   required?: boolean;
   accept?: string;
   options?: string[];
-  defaultValue?: any; // Added defaultValue property
+  defaultValue?: any;
 }
 
 const FormGroup: React.FC<FormGroupProps> = ({
@@ -22,7 +22,7 @@ const FormGroup: React.FC<FormGroupProps> = ({
   required = false,
   accept,
   options,
-  defaultValue, // Using defaultValue
+  defaultValue,
 }) => {
   return (
     <div className="form-group">
@@ -44,7 +44,7 @@ const FormGroup: React.FC<FormGroupProps> = ({
           placeholder={placeholder}
           required={required}
           accept={accept}
-          defaultValue={defaultValue} // Applied defaultValue
+          defaultValue={defaultValue}
         />
       )}
     </div>

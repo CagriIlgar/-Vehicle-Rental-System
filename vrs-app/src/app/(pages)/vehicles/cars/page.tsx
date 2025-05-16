@@ -25,7 +25,9 @@ interface Vehicle {
   SellerName: string;
   SellerSurname: string;
   Color: string;
-  Location: string;
+  LocationID: number;
+  Address: string;
+  City: string;
   Latitude: number;
   Longitude: number;
 }
@@ -44,7 +46,9 @@ const Cars: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [locationQuery, setLocationQuery] = useState<string>("");
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
+
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -78,19 +82,6 @@ const Cars: React.FC = () => {
     fetchVehicles();
   }, []);
 
-  const handleSort = (a: Vehicle, b: Vehicle) => {
-    switch (sortBy) {
-      case "price":
-        return parseFloat(a.PricePerDay) - parseFloat(b.PricePerDay);
-      case "seats":
-        return b.Seats - a.Seats;
-      case "brand":
-        return a.Brand.localeCompare(b.Brand);
-      default:
-        return 0;
-    }
-  };
-
   const filterByPrice = (price: string): boolean => {
     const pricePerDay = parseFloat(price);
     if (selectedPriceRanges.length === 0) return true;
@@ -103,6 +94,10 @@ const Cars: React.FC = () => {
     );
   };
 
+  const [selectedCity, setSelectedCity] = useState<string>("");
+
+  const uniqueCities = Array.from(new Set(vehicles.map(v => v.City))).filter(Boolean).sort();
+
   const filteredVehicles = vehicles
     .filter((vehicle) =>
       vehicle.Type === "Car" &&
@@ -114,7 +109,8 @@ const Cars: React.FC = () => {
         transmission.manual && vehicle.Transmission === "Manual" ||
         (!transmission.automatic && !transmission.manual)) &&
       (vehicle.Brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vehicle.Model.toLowerCase().includes(searchQuery.toLowerCase()))
+        vehicle.Model.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (selectedCity === "" || vehicle.City === selectedCity)
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -128,138 +124,254 @@ const Cars: React.FC = () => {
           return 0;
       }
     });
-    const handleViewDeal = (vehicle: Vehicle) => {
-      if (!startDate || !endDate) {
-        alert("Please select rental dates before proceeding."); //  Tarih aralığı zorunlu seçme cnm
-        return;
-      }
-  
-      // tarihe göre fiyat aralığı hesaplaması 
-      const dayDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      const rentalDays = dayDiff > 0 ? dayDiff : 1; // Minimum 1 gün
-  
-      // total fiyat
-      const totalPrice = rentalDays * parseFloat(vehicle.PricePerDay);
-  
-      //  localStorage kullandık kiralanan araç bilgileri kaydedilsin diye
-      const rentalData = {
-        VehicleID: vehicle.VehicleID,
-        Brand: vehicle.Brand,
-        Model: vehicle.Model,
-        StartDate: startDate.toISOString(),
-        EndDate: endDate.toISOString(),
-        PricePerDay: vehicle.PricePerDay,
-        TotalPrice: totalPrice,
-        Photo: vehicle.Photo,
-      };
-  
-      localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
-  
-      // view deal gitme yeri
-      window.location.href = "/viewDeal";
+
+  const handleViewDeal = (vehicle: Vehicle) => {
+    if (!startDate || !endDate) {
+      alert("Please select rental dates before proceeding.");
+      return;
+    }
+
+    const dayDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const rentalDays = dayDiff > 0 ? dayDiff : 1;
+
+    const totalPrice = rentalDays * parseFloat(vehicle.PricePerDay);
+
+    const rentalData = {
+      VehicleID: vehicle.VehicleID,
+      Brand: vehicle.Brand,
+      Model: vehicle.Model,
+      StartDate: startDate.toISOString(),
+      EndDate: endDate.toISOString(),
+      PricePerDay: vehicle.PricePerDay,
+      TotalPrice: totalPrice,
+      Photo: vehicle.Photo,
+      Address: vehicle.Address,
+      City: vehicle.City
     };
+
+    localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
+    window.location.href = "/viewDeal";
+  };
+
 
   if (loading) return <div>Loading vehicles...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <ClientLayout>
-
-      <div className="vehicles-container">
-
-        <div className="filter-sidebar">
-          <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />
-          <h2>Filter by: </h2>
-          <input
-            type="text"
-            placeholder="Search by Brand or Model"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-
-
-          <h3>Price per Day</h3>
-          {["0-50", "50-100", "100-150", "150-200", "200+"].map(range => (
-            <label key={range}>
-              <input
-                type="checkbox"
-                checked={selectedPriceRanges.includes(range)}
-                onChange={() => setSelectedPriceRanges(prev =>
-                  prev.includes(range) ? prev.filter(r => r !== range) : [...prev, range]
-                )}
-              />
-              {range === "200+" ? "$200+" : `$${range.replace("-", " - $")}`}
-            </label>
-          ))}
-          <h3>Color</h3>
-          {["Red", "Blue", "Black", "White", "Green"].map(color => (
-            <label key={color}>
-              <input
-                type="checkbox"
-                checked={selectedColors.includes(color.toLowerCase())}
-                onChange={() => setSelectedColors(prev =>
-                  prev.includes(color.toLowerCase())
-                    ? prev.filter(c => c !== color.toLowerCase())
-                    : [...prev, color.toLowerCase()]
-                )}
-              />
-              {color}
-            </label>
-          ))}
-          <h3>Transmission</h3>
-          <label>
-            <input
-              type="checkbox"
-              checked={transmission.automatic}
-              onChange={() => setTransmission(prev => ({ ...prev, automatic: !prev.automatic }))}
-            />
-            Automatic
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={transmission.manual}
-              onChange={() => setTransmission(prev => ({ ...prev, manual: !prev.manual }))}
-            />
-            Manual
-          </label>
-        </div>
-        <div className="vehicles-list">
-          <h1>Available Cars</h1>
-          <input
-            type="text"
-            placeholder="Search by Location"
-            value={locationQuery}
-            onChange={(e) => setLocationQuery(e.target.value)}
-          />
-          <select onChange={(e) => setSortBy(e.target.value)} value={sortBy}>
-            <option value="price">Sort by Price (Low to High)</option>
-            <option value="seats">Sort by Seats</option>
-            <option value="brand">Sort by Brand</option>
-          </select>
-          
-          <h3>Select Rental Dates</h3>
+      {!startDate || !endDate || !startTime || !endTime ? (
+        <div className="date-selection-container">
+          <p className="date-selection-message">Select your pick up date.</p>
           <div className="date-picker">
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              placeholderText="Start Date"
-            />
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              placeholderText="End Date"
-            />
+            <div className="date-picker-field">
+              <label className="date-picker-label">Pick Up Date</label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Select Start Date"
+                minDate={new Date()}
+                popperPlacement="bottom"
+                className="custom-datepicker"
+              />
+            </div>
+
+            <div className="date-picker-field">
+              <label className="date-picker-label">Drop Off Date</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Select End Date"
+                minDate={startDate || new Date()}
+                popperPlacement="bottom"
+                className="custom-datepicker"
+              />
+            </div>
+
+            <div className="date-picker-field">
+              <label className="date-picker-label">Pick Up Time</label>
+              <DatePicker
+                selected={startTime}
+                onChange={(time) => setStartTime(time)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={30}
+                timeCaption="Pick Up Time"
+                dateFormat="h:mm aa"
+                placeholderText="Select Time"
+                className="custom-datepicker"
+              />
+            </div>
+
+            <div className="date-picker-field">
+              <label className="date-picker-label">Drop Off Time</label>
+              <DatePicker
+                selected={endTime}
+                onChange={(time) => setEndTime(time)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={30}
+                timeCaption="Drop Off Time"
+                dateFormat="h:mm aa"
+                placeholderText="Select Time"
+                className="custom-datepicker"
+              />
+            </div>
           </div>
-          <div>
-            {!startDate || !endDate ? (
-              <div>Lütfen kiralama tarihlerini seçin.</div>
+        </div>
+      ) : (
+        <div className="vehicles-container" style={{ display: "flex", padding: "20px" }}>
+          <div className="filter-sidebar">
+            {/* <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />  */}
+            <h2>Filter by: </h2>
+            <h3>Şehir Filtrele</h3>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              style={{ width: "100%", padding: "10px", marginBottom: "20px" }}
+            >
+              <option value="">Tüm Şehirler</option>
+              {uniqueCities.map((city) => (
+                <option key={city} value={city}>
+                  {city.toUpperCase()}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Search by Brand or Model"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <h3>Price per Day</h3>
+            {["0-50", "50-100", "100-150", "150-200", "200+"].map(range => (
+              <label key={range}>
+                <input
+                  type="checkbox"
+                  checked={selectedPriceRanges.includes(range)}
+                  onChange={() => setSelectedPriceRanges(prev =>
+                    prev.includes(range) ? prev.filter(r => r !== range) : [...prev, range]
+                  )}
+                />
+                {range === "200+" ? "$200+" : `$${range.replace("-", " - $")}`}
+              </label>
+            ))}
+            <h3>Color</h3>
+            {["Red", "Blue", "Black", "White", "Green"].map(color => (
+              <label key={color}>
+                <input
+                  type="checkbox"
+                  checked={selectedColors.includes(color.toLowerCase())}
+                  onChange={() => setSelectedColors(prev =>
+                    prev.includes(color.toLowerCase())
+                      ? prev.filter(c => c !== color.toLowerCase())
+                      : [...prev, color.toLowerCase()]
+                  )}
+                />
+                {color}
+              </label>
+            ))}
+            <h3>Transmission</h3>
+            <label>
+              <input
+                type="checkbox"
+                checked={transmission.automatic}
+                onChange={() => setTransmission(prev => ({ ...prev, automatic: !prev.automatic }))}
+              />
+              Automatic
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={transmission.manual}
+                onChange={() => setTransmission(prev => ({ ...prev, manual: !prev.manual }))}
+              />
+              Manual
+            </label>
+          </div>
+
+          <div className="vehicles-list" style={{ width: "70%" }}>
+            <h1>Available Cars</h1>
+            <select
+              onChange={(e) => setSortBy(e.target.value)}
+              value={sortBy}
+              style={{ width: "100%", padding: "10px", marginBottom: "20px" }}
+            >
+              <option value="price">Fiyata Göre (Artan)</option>
+              <option value="seats">Koltuk Sayısına Göre</option>
+              <option value="brand">Markaya Göre</option>
+            </select>
+
+            <div className="date-picker">
+              <div className="date-picker-field">
+                <label className="date-picker-label">Pick Up Date</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  placeholderText="Select Start Date"
+                  minDate={new Date()}
+                  popperPlacement="bottom"
+                  className="custom-datepicker"
+                />
+              </div>
+
+              <div className="date-picker-field">
+                <label className="date-picker-label">Drop Off Date</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  placeholderText="Select End Date"
+                  minDate={startDate || new Date()}
+                  popperPlacement="bottom"
+                  className="custom-datepicker"
+                />
+              </div>
+
+              <div className="date-picker-field">
+                <label className="date-picker-label">Pick Up Time</label>
+                <DatePicker
+                  selected={startTime}
+                  onChange={(time) => setStartTime(time)}
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={30}
+                  timeCaption="Pick Up Time"
+                  dateFormat="h:mm aa"
+                  placeholderText="Select Time"
+                  className="custom-datepicker"
+                />
+              </div>
+
+              <div className="date-picker-field">
+                <label className="date-picker-label">Drop Off Time</label>
+                <DatePicker
+                  selected={endTime}
+                  onChange={(time) => setEndTime(time)}
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={30}
+                  timeCaption="Drop Off Time"
+                  dateFormat="h:mm aa"
+                  placeholderText="Select Time"
+                  className="custom-datepicker"
+                />
+              </div>
+            </div>
+
+
+            {filteredVehicles.length === 0 ? (
+              <p>Filtrelere uygun araç bulunamadı.</p>
             ) : (
               filteredVehicles.map((vehicle) => (
                 <VehicleCard
@@ -273,14 +385,13 @@ const Cars: React.FC = () => {
                   price={vehicle.PricePerDay}
                   largeBag={vehicle.LargeBag}
                   seats={vehicle.Seats}
-                  seller={`${vehicle.SellerName} ${vehicle.SellerSurname}`}
                   onViewDealClick={() => handleViewDeal(vehicle)}
                 />
               ))
             )}
           </div>
         </div>
-      </div>
+      )}
     </ClientLayout>
   );
 };

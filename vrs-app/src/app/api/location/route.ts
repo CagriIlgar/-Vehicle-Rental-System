@@ -2,7 +2,6 @@ import { pool } from "@/lib/mysql";
 import { NextResponse, NextRequest } from "next/server";
 import { ResultSetHeader } from "mysql2";
 
-//Handler for GET request (fetch locations by SellerID)
 export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
@@ -24,14 +23,11 @@ export async function GET(request: NextRequest) {
     }
 }
 
-
-// Handler for POST request (add a new location)
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { SellerID, LocationName, LocationType, Address, City, Latitude, Longitude } = body;
 
-        // Validate required fields
         if (!SellerID || !LocationName || !LocationType || !Address || !City || !Latitude || !Longitude) {
             return NextResponse.json({ message: "All fields are required" }, { status: 400 });
         }
@@ -48,6 +44,31 @@ export async function POST(request: NextRequest) {
         }
     } catch (error) {
         console.error("Error adding location:", error);
+        return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const url = new URL(request.url);
+        const locationId = url.searchParams.get("locationId");
+
+        if (!locationId) {
+            return NextResponse.json({ message: "Location ID is required" }, { status: 400 });
+        }
+
+        const [result]: any = await pool.execute<ResultSetHeader>(
+            "DELETE FROM location WHERE LocationID = ?",
+            [locationId]
+        );
+
+        if (result.affectedRows > 0) {
+            return NextResponse.json({ message: "Location deleted successfully" });
+        } else {
+            return NextResponse.json({ message: "Location not found" }, { status: 404 });
+        }
+    } catch (error) {
+        console.error("Error deleting location:", error);
         return NextResponse.json({ message: "Internal server error" }, { status: 500 });
     }
 }

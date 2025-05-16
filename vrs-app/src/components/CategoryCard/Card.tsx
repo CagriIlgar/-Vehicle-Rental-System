@@ -20,9 +20,9 @@ const Card: React.FC<CardProps> = ({ image, title, navigateTo }) => {
     };
     return (
         <div className="card">
-            <h2 className="card-title">{title}</h2>
+            <h3 className="card-title">{title}</h3>
 
-            <img src={image} alt={title} className="card-img" />
+            <img src={image} alt={title} className="card-img" onClick={handleButtonClick}/>
             <button className="card-button" onClick={handleButtonClick}>
                 VIEW ALL!
             </button>

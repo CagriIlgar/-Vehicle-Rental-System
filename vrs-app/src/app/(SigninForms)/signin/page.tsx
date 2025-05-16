@@ -12,6 +12,9 @@ const SignInPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
+  const handleLogoClick = () => {
+    router.push("/");
+  };
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const response = await signIn('credentials', {
@@ -28,10 +31,10 @@ const SignInPage = () => {
 
   return (
     <div className="siginPageContainer">
-      <h1>CyRent</h1>
+      <div className="logo" onClick={handleLogoClick}>CyRent</div>
       <div className="loginContainer">
         <p>Please enter your details</p>
-        <h2>Welcome back</h2>
+        <h2>Welcome back!</h2>
 
         <div className="formGroup">
           <label htmlFor="email">Email</label>
@@ -56,7 +59,7 @@ const SignInPage = () => {
         <div className="formGroup" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <label>
             <input type="checkbox" />
-            <span style={{ color: "#7E7E7E", marginLeft: '8px' }}>Remember</span>
+            <span style={{marginLeft: '8px'}}>Remember</span>
           </label>
           <a href="#" className="forgotPasswordBtn">Forgot Password?</a>
         </div>

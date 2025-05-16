@@ -28,6 +28,7 @@ interface Vehicle {
 }
 
 interface Location {
+  LocationID: number;
   LocationName: string;
   LocationType: string;
   Address: string;
@@ -50,6 +51,7 @@ const ProfilePage: React.FC = () => {
     Longitude: "",
   });
   const [message, setMessage] = useState<string | null>(null);
+
   const fetchLocations = async () => {
     if (session && session.user) {
       const response = await fetch(`/api/location?sellerId=${session.user.id}`);
@@ -68,12 +70,6 @@ const ProfilePage: React.FC = () => {
         const response = await fetch(`/api/vehicles?sellerId=${session.user.id}`);
         const data = await response.json();
         setVehicles(data.vehicles);
-      };
-
-      const fetchLocations = async () => {
-        const response = await fetch(`/api/location?sellerId=${session.user.id}`);
-        const data = await response.json();
-        setLocations(data.locations);
       };
 
       fetchVehicles();
@@ -98,7 +94,7 @@ const ProfilePage: React.FC = () => {
       setMessage("Please fill all fields.");
       return;
     }
-  
+
     const response = await fetch("/api/location", {
       method: "POST",
       headers: {
@@ -109,7 +105,7 @@ const ProfilePage: React.FC = () => {
         ...locationData,
       }),
     });
-  
+
     const data = await response.json();
     if (response.ok) {
       setMessage("Location added successfully.");
@@ -118,7 +114,53 @@ const ProfilePage: React.FC = () => {
       setMessage(data.message || "Failed to add location.");
     }
   };
-  
+  const updateVehicleStatus = async (vehicleId: number, status: string) => {
+    try {
+      const response = await fetch("/api/vehicles", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ VehicleID: vehicleId, AvailabilityStatus: status }), // <-- Notice uppercase V
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Availability status updated!");
+      } else {
+        alert(`Failed to update status: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating vehicle status:", error);
+      alert("Failed to update vehicle status");
+    }
+  };
+
+
+  const deleteLocation = async (locationId: number) => {
+    try {
+      const response = await fetch(`/api/location?locationId=${locationId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setLocations((prevLocations) =>
+          prevLocations.filter((location) => location.LocationID !== locationId)
+        );
+        alert("Location deleted successfully!");
+      } else {
+        alert(`Failed to delete location: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error deleting location:", error);
+      alert("Failed to delete location");
+    }
+  };
 
   const deleteVehicle = async (vehicleId: number) => {
     try {
@@ -194,36 +236,53 @@ const ProfilePage: React.FC = () => {
               </button>
             </div>
 
-            <div className="location-form">
-              <h2>Add Location</h2>
-              <input type="text" name="LocationName" value={locationData.LocationName} onChange={handleLocationChange} placeholder="Location Name" />
-              <input type="text" name="LocationType" value={locationData.LocationType} onChange={handleLocationChange} placeholder="Location Type" />
-              <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Address" />
-              <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="City" />
-              <input type="text" name="Latitude" value={locationData.Latitude} onChange={handleLocationChange} placeholder="Latitude" />
-              <input type="text" name="Longitude" value={locationData.Longitude} onChange={handleLocationChange} placeholder="Longitude" />
-              <button className="add-location-btn" onClick={addLocation}>
-                Add Location
-              </button>
-              {message && <p>{message}</p>}
-            </div>
+            <div className="business-section-flex">
+              <div className="location-form">
+                <h2>Add Location</h2>
+                <input type="text" name="LocationName" value={locationData.LocationName} onChange={handleLocationChange} placeholder="Location Name" />
+                <select
+                  name="LocationType"
+                  value={locationData.LocationType}
+                  onChange={(e) =>
+                    setLocationData((prev) => ({ ...prev, LocationType: e.target.value }))
+                  }
+                >
+                  <option value="">Select Location Type</option>
+                  <option value="Sell Point">Sell Point</option>
+                  <option value="Business">Business</option>
+                </select>
+                <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Address" />
+                <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="City" />
+                <input type="text" name="Latitude" value={locationData.Latitude} onChange={handleLocationChange} placeholder="Latitude" />
+                <input type="text" name="Longitude" value={locationData.Longitude} onChange={handleLocationChange} placeholder="Longitude" />
+                <button className="add-location-btn" onClick={addLocation}>Add Location</button>
+                {message && <p>{message}</p>}
+              </div>
 
-            <div className="business-locations-list">
-              <h2 className="business-title">Your Locations</h2>
-              {locations.length === 0 ? (
-                <p className="no-locations">No locations added yet.</p>
-              ) : (
-                <div className="location-list">
-                  {locations.map((location, index) => (
-                    <div key={index} className="location-item">
-                      <p>{location.LocationName}</p>
-                      <p>{location.LocationType}</p>
-                      <p>{location.Address}, {location.City}</p>
-                      <p>Latitude: {location.Latitude}, Longitude: {location.Longitude}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="business-locations-list">
+                <h2 className="business-title">Your Locations</h2>
+                {locations.length === 0 ? (
+                  <p className="no-locations">No locations added yet.</p>
+                ) : (
+                  <div className="location-list">
+                    {locations.map((location, index) => (
+                      <div key={index} className="location-item">
+                        <p><strong>{location.LocationName}</strong></p>
+                        <p>{location.LocationType}</p>
+                        <p>{location.Address}, {location.City}</p>
+                        <p>Latitude: {location.Latitude}</p>
+                        <p>Longitude: {location.Longitude}</p>
+                        <button
+                          className="delete-location-btn"
+                          onClick={() => deleteLocation(location.LocationID)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="business-cars-list">
@@ -232,9 +291,9 @@ const ProfilePage: React.FC = () => {
               {vehicles.length === 0 ? (
                 <p className="no-cars">No vehicles added yet.</p>
               ) : (
-                <div className="vehicle-list">
+                <div className="vehicle-grid">
                   {vehicles.map((vehicle) => (
-                    <div key={vehicle.VehicleID} className="vehicle-item">
+                    <div key={vehicle.VehicleID} className="vehicles">
                       <img
                         src={vehicle.Photo}
                         alt={vehicle.Model}
@@ -242,13 +301,39 @@ const ProfilePage: React.FC = () => {
                       />
                       <p>{vehicle.Brand} {vehicle.Model}</p>
                       <p>{vehicle.PricePerDay} per day</p>
-                      <p>{vehicle.AvailabilityStatus}</p>
+                      <p>Status: {vehicle.AvailabilityStatus}</p>
+
+                      <select
+                        value={vehicle.AvailabilityStatus}
+                        onChange={(e) =>
+                          setVehicles((prev) =>
+                            prev.map((v) =>
+                              v.VehicleID === vehicle.VehicleID
+                                ? { ...v, AvailabilityStatus: e.target.value }
+                                : v
+                            )
+                          )
+                        }
+                      >
+                        <option value="Available">Available</option>
+                        <option value="Rented">Rented</option>
+                        <option value="Maintenance">Maintenance</option>
+                      </select>
+
+                      <button
+                        className="update-btn"
+                        onClick={() => updateVehicleStatus(vehicle.VehicleID, vehicle.AvailabilityStatus)}
+                      >
+                        Update Status
+                      </button>
+
                       <button
                         className="delete-btn"
                         onClick={() => deleteVehicle(vehicle.VehicleID)}
                       >
                         Delete
                       </button>
+
                     </div>
                   ))}
                 </div>

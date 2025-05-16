@@ -53,6 +53,8 @@ export async function GET(req: NextRequest) {
           v.ImportantInfo, 
           v.Contact,
           v.LocationID,
+          l.Address,
+          l.City,
           l.Latitude,
           l.Longitude,
           s.ContactPersonName as SellerName, 
@@ -201,28 +203,33 @@ export async function DELETE(req: NextRequest) {
 }
 export async function PUT(req: NextRequest) {
   try {
-    const { VehicleID, Type, Brand, Model, PricePerDay, AvailabilityStatus } = await req.json();
+    const { VehicleID, AvailabilityStatus } = await req.json();
+
+    if (!VehicleID || !AvailabilityStatus) {
+      return NextResponse.json({ message: 'VehicleID and AvailabilityStatus are required' }, { status: 400 });
+    }
 
     const query = `
-      UPDATE vehicle 
-      SET Type = ?, Brand = ?, Model = ?, PricePerDay = ?, AvailabilityStatus = ?
+      UPDATE vehicle
+      SET AvailabilityStatus = ?
       WHERE VehicleID = ?
     `;
-    
-    const params = [Type, Brand, Model, PricePerDay, AvailabilityStatus, VehicleID];
+
+    const params = [AvailabilityStatus, VehicleID];
 
     const [result]: any = await pool.execute(query, params);
 
     if (result.affectedRows > 0) {
-      return NextResponse.json({ message: "Vehicle updated successfully" });
+      return NextResponse.json({ message: "Availability status updated successfully" });
     } else {
-      return NextResponse.json({ message: "Failed to update vehicle" }, { status: 400 });
+      return NextResponse.json({ message: "Failed to update availability status" }, { status: 400 });
     }
   } catch (error: unknown) {
     console.error('Error in PUT:', error);
     if (error instanceof Error) {
-      return NextResponse.json({ message: 'Failed to edit vehicle', error: error.message }, { status: 500 });
+      return NextResponse.json({ message: 'Failed to update availability status', error: error.message }, { status: 500 });
     }
     return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
   }
 }
+

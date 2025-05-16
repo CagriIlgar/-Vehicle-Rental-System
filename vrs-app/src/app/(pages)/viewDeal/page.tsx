@@ -24,11 +24,17 @@ const ViewDeal = () => {
     return (
         <div className="view-deal-container">
             <div className="deal-card">
+                <div className="pickup-location">
+                    <h3>Pickup Location</h3>
+                    <p><strong>Address:</strong> {vehicle.Address}</p>
+                    <p><strong>City:</strong> {vehicle.City}</p>
+                </div>
+
                 <div className="car-info">
                     <img src={vehicle.Photo} alt={vehicle.Model} className="car-image" />
                     <div className="details">
                         <h2>{vehicle.Brand} {vehicle.Model}</h2>
-                        <p>🚘 5 seats &nbsp; ⚙️ {vehicle.Transmission}</p> 
+                        <p>🚘 5 seats &nbsp; ⚙️ {vehicle.Transmission}</p>
                         <p>🧳 Large bag &nbsp; ♾️ Unlimited mileage</p>
                     </div>
                 </div>

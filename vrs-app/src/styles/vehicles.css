@@ -1,36 +1,157 @@
 .vehicles-container {
     display: flex;
-    margin: 20px auto;
+    margin: 50px auto;
     padding: 20px;
-
 }
+
 .filter-sidebar {
     border-radius: 8px;
-    width: 350px;
-    background-color: white;
+    width: 450px;
+    color: var(--text-default);
+    background-color: var(--color-gray-200);
     padding: 20px;
     margin-right: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .filter-sidebar label {
     display: block;
     margin-bottom: 10px;
 }
+
 .vehicles-list select {
-    width: 100%;
     padding: 8px;
     margin-bottom: 20px;
 }
-.vehicles-list {
-    flex-grow: 1;
+
+.vehicles-list input {
+    margin-right: 10px;
+    padding: 8px;
+    margin-bottom: 20px;
+    width: 200px;
 }
 
-.filter-sidebar h3{
-    color: black;
+.filter-sidebar h3 {
     font-size: 20px;
     margin-bottom: 5px;
     margin-top: 5px;
 }
-.filter-sidebar label input{
-    margin-right: 5px;  
+
+.filter-sidebar label input {
+    margin-right: 5px;
+}
+
+.date-selection-container {
+    position: relative;
+    margin: 100px auto;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    border-radius: 10px;
+    animation: fadeIn 0.8s ease-in-out;
+    z-index: 1;
+}
+
+.date-selection-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 5px dotted var(--color-primary-50);
+    border-radius: 10px;
+    z-index: -1;
+    animation: pulseScale 1.5s ease-in-out infinite;
+}
+
+.date-selection-message {
+    color: var(--color-primary-50);
+    margin-bottom: 40px;
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0.9;
+    animation: pulseScale 1.5s ease-in-out infinite;
+}
+
+.date-picker {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.date-picker-field {
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.date-picker-label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-primary-50);
+}
+
+.date-picker-wrapper {
+    min-width: 220px;
+    animation: fadeIn 1s ease-in;
+}
+
+.custom-datepicker {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-datepicker:focus {
+    outline: none;
+    border-color: #888;
+    box-shadow: 0 0 8px rgba(136, 136, 136, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseScale {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }

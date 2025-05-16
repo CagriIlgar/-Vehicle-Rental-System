@@ -1,56 +1,70 @@
 @import url("../../../styles/colors.css");
 
 .businessRegsPageContainer {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-  }
-  
-  .registerContainer {
-    background-color: var(--light);
-    width: 100%;
-    max-width: 600px;
-    border-radius: 10px;
-    padding: 20px 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 15px;
-    row-gap: 5px;
-  }
-  
-  .input-form {
-    margin-top: 10px;
-  }
-  
-  .registerButton {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: var(--blue);
-    color: var(--light);
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  
-  .registerButton:hover {
-    background-color: var(--blueMid);
-  }
-  
-  .returnToLoginBtn {
-    font-weight: bold;
-    font-size: 14px;
-    color: var(--darkBlue);
-  }
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.registerContainer {
+  background-color: var(--bg-card);
+  width: 100%;
+  max-width: 600px;
+  border-radius: 10px;
+  padding: 20px 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 15px;
+  row-gap: 5px;
+}
+
+.registerButton {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--button-blue-50);
+  color: var(--light);
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.registerButton:hover {
+  background-color: var(--button-blue-100);
+}
+
+.returnToLoginBtn {
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--text-default);
+}
+
+.formGroup label {
+  color: var(--text-default);
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.formGroup input[type="checkbox"] {
+  margin: 0;
+}
+
+.logo {
+  cursor: pointer;
+  font-size: 40px;
+  font-weight: bold;
+  color: var(--color-primary-50);
+}
