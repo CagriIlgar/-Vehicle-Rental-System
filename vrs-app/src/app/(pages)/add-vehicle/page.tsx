@@ -3,7 +3,7 @@ import { FormEvent, useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormGroup from "../../../components/FormGroup/FormGroup";
-import "./addVehicle.css";
+import "./add-vehicle.css";
 import ClientLayout from "@/app/client-layout";
 
 const AddVehicle: React.FC = () => {

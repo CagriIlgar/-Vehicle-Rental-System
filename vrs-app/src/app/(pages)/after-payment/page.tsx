@@ -1,5 +1,5 @@
 "use client";
-import "./afterPayment.css";
+import "./after-payment.css";
 import React from "react";
 
 const Page = () => {

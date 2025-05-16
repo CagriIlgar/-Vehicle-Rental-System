@@ -1,5 +1,5 @@
 import React from "react";
-import "../VehicleCard/vehicleCard.css";
+import "../VehicleCard/vehicle-card.css";
 
 type VehicleCardProps = {
   brand?: string;

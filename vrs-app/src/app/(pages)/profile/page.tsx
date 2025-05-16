@@ -230,7 +230,7 @@ const ProfilePage: React.FC = () => {
             <div>
               <button
                 className="add-car-btn"
-                onClick={() => router.push("/addVehicle")}
+                onClick={() => router.push("/add-vehicle")}
               >
                 Add a Vehicle
               </button>

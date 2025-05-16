@@ -150,7 +150,7 @@ const Cars: React.FC = () => {
     };
 
     localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
-    window.location.href = "/viewDeal";
+    window.location.href = "/view-deal";
   };
 
 

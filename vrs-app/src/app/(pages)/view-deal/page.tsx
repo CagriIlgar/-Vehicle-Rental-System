@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import "./viewDeal.css";
+import "./view-deal.css";
 
 const ViewDeal = () => {
     const [vehicle, setVehicle] = useState<any>(null);
