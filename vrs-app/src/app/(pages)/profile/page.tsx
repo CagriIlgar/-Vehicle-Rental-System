@@ -139,6 +139,9 @@ const ProfilePage: React.FC = () => {
 
 
   const deleteLocation = async (locationId: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this location?");
+    if (!confirmDelete) return;
+
     try {
       const response = await fetch(`/api/location?locationId=${locationId}`, {
         method: "DELETE",
@@ -162,7 +165,11 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+
   const deleteVehicle = async (vehicleId: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this vehicle?");
+    if (!confirmDelete) return;
+
     try {
       const response = await fetch(`/api/vehicles`, {
         method: "DELETE",
@@ -186,6 +193,7 @@ const ProfilePage: React.FC = () => {
       alert("Failed to delete vehicle");
     }
   };
+
 
   if (status === "loading") {
     return <p className="loading-text">Loading...</p>;
@@ -251,8 +259,8 @@ const ProfilePage: React.FC = () => {
                   <option value="Sell Point">Sell Point</option>
                   <option value="Business">Business</option>
                 </select>
-                <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Address" />
-                <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="City" />
+                <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Full Address" />
+                <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="Place or City" />
                 <input type="text" name="Latitude" value={locationData.Latitude} onChange={handleLocationChange} placeholder="Latitude" />
                 <input type="text" name="Longitude" value={locationData.Longitude} onChange={handleLocationChange} placeholder="Longitude" />
                 <button className="add-location-btn" onClick={addLocation}>Add Location</button>
@@ -320,12 +328,15 @@ const ProfilePage: React.FC = () => {
                         <option value="Maintenance">Maintenance</option>
                       </select>
 
-                      <button
-                        className="update-btn"
-                        onClick={() => updateVehicleStatus(vehicle.VehicleID, vehicle.AvailabilityStatus)}
-                      >
-                        Update Status
-                      </button>
+                      <div>
+                        <button
+                          className="update-btn"
+                          onClick={() => updateVehicleStatus(vehicle.VehicleID, vehicle.AvailabilityStatus)}
+                        >
+                          Update Status
+                        </button>
+                      </div>
+
 
                       <button
                         className="delete-btn"

@@ -6,7 +6,7 @@
 
 .filter-sidebar {
     border-radius: 8px;
-    width: 450px;
+    width: 400px;
     color: var(--text-default);
     background-color: var(--color-gray-200);
     padding: 20px;
@@ -54,6 +54,36 @@
     z-index: 1;
 }
 
+.date-selection-container select,
+.filter-sidebar select,
+.vehicles-list select,
+.brand-search,
+.custom-datepicker {
+    width: 80%;
+    border-radius: 8px;
+    border: 2px solid var(--color-primary-50);
+    background-color: var(--color-gray-200);
+    font-size: 1rem;
+    color: var(--text-default);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.brand-search {
+    cursor: text;
+}
+
+.date-selection-container select:focus,
+.filter-sidebar select:focus,
+.vehicles-list select:focus,
+.brand-search:focus,
+.custom-datepicker:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary-50);
+}
+
 .date-selection-container::before {
     content: "";
     position: absolute;
@@ -67,20 +97,9 @@
     animation: pulseScale 1.5s ease-in-out infinite;
 }
 
-.date-selection-message {
-    color: var(--color-primary-50);
-    margin-bottom: 40px;
-    font-size: 1.25rem;
-    font-weight: 500;
-    text-align: center;
-    opacity: 0.9;
-    animation: pulseScale 1.5s ease-in-out infinite;
-}
-
 .date-picker {
     display: flex;
     gap: 30px;
-    margin-bottom: 20px;
     flex-wrap: wrap;
     justify-content: center;
 }
@@ -92,30 +111,32 @@
 }
 
 .date-picker-label {
-    margin-bottom: 8px;
-    font-weight: 500;
-    font-size: 0.95rem;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 1rem;
     color: var(--color-primary-50);
-}
-
-.date-picker-wrapper {
-    min-width: 220px;
-    animation: fadeIn 1s ease-in;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 
 .custom-datepicker {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 1rem;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
 }
 
-.custom-datepicker:focus {
-    outline: none;
-    border-color: #888;
-    box-shadow: 0 0 8px rgba(136, 136, 136, 0.3);
+.react-datepicker {
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    font-size: 0.9rem;
+}
+
+.date-selection-container select option {
+    padding: 8px 12px;
+    transition: background-color 0.3s ease;
+}
+
+.date-selection-container select option:hover {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary);
 }
 
 @keyframes fadeIn {
@@ -153,5 +174,93 @@
 
     100% {
         transform: scale(1);
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .vehicles-container {
+        flex-direction: column;
+        align-items: center;
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    .filter-sidebar {
+        width: 90%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .vehicles-list input {
+        width: 100%;
+    }
+
+    .date-selection-container {
+        width: 80%;
+        padding: 40px 15px;
+    }
+
+    .date-picker {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-sidebar h3 {
+        font-size: 18px;
+    }
+
+    .filter-sidebar label {
+        font-size: 14px;
+    }
+
+    .vehicles-list select,
+    .vehicles-list input,
+    .brand-search,
+    .custom-datepicker {
+        width: 100%;
+        font-size: 0.95rem;
+    }
+
+    .date-selection-container {
+        width: 95%;
+        padding: 30px 10px;
+    }
+
+    .date-picker-field {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .vehicles-container {
+        padding: 10px;
+    }
+
+    .filter-sidebar {
+        padding: 15px;
+    }
+
+    .filter-sidebar h3 {
+        font-size: 16px;
+    }
+
+    .date-selection-container {
+        padding: 20px 10px;
+    }
+
+    .date-picker {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .date-picker-label {
+        font-size: 0.85rem;
+    }
+
+    .vehicles-list input,
+    .vehicles-list select {
+        font-size: 0.9rem;
     }
 }

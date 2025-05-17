@@ -1,15 +1,96 @@
 .vehicle-card {
-  display: flex;
-  flex-direction: row;
-  background-color: var(--color-gray-200);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 20px;
+  perspective: 1000px;
   width: 100%;
   max-width: 950px;
-  height: auto;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  position: relative;
+  height: 220px;
+  overflow: visible;
+  background-color: transparent;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
+  border-radius: 8px;
+  background-color: var(--color-gray-200);
+}
+
+.vehicle-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
   padding: 10px;
+  overflow-y: auto;
+  background-color: var(--color-gray-200);
+}
+
+.card-front {
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+  color: var(--text-default, #222);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  position: relative;
+}
+
+.card-back h4 {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--button-blue-100);
+}
+
+.card-back ul li {
+  margin-left: 20px;
+  list-style: circle;
+  color: var(--text-default);
+}
+
+.card-back .info-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--button-blue-100);
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 16px;
+  z-index: 5;
+}
+
+.vehicle-buttons .info-button {
+  color: var(--button-blue-100);
+  padding: 0;
+  margin: 0;
+  text-decoration: underline;
+  font-size: 16px;
 }
 
 .vehicle-image {
@@ -56,17 +137,6 @@
   flex-wrap: wrap;
 }
 
-.info-button,
-.contact-button {
-  color: var(--button-blue-100);
-  border: none;
-  font-size: 1em;
-  cursor: pointer;
-  text-decoration: underline;
-  background: none;
-  padding: 0 !important;
-}
-
 .vehicle-right {
   display: flex;
   flex-direction: column;
@@ -80,7 +150,7 @@
 
 .vehicle-price {
   font-size: 14px;
-  color: var(--color-black);
+  color: var(--text-default);
   font-weight: bold;
 }
 
@@ -93,7 +163,7 @@
 .view-deal-button {
   padding: 10px 20px;
   background-color: var(--color-success);
-  color: var(--text-default);
+  color: var(--color-white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -104,47 +174,141 @@
   background-color: #218838;
 }
 
-/* Responsive */
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-default);
+  margin: 4px 0;
+}
 
-@media (max-width: 1024px) {
+.spec-icon {
+  color: var(--button-blue-100);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.back-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: var(--text-default);
+  margin-left: 20px;
+}
+
+.back-table td {
+  vertical-align: top;
+}
+
+.back-table td:first-child {
+  border-left: none;
+  width: 25%;
+}
+
+.back-table td:nth-child(2) {
+  width: 30%;
+}
+
+.back-table td:last-child {
+  width: 45%;
+}
+
+.back-table h3 {
+  font-size: 20px;
+}
+
+.no-deposit {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: red;
+  animation: blinking 1.5s infinite;
+}
+
+@keyframes blinking {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .vehicle-card {
+    height: auto;
+    min-height: 220px;
+  }
+
+  .card-inner {
     flex-direction: column;
-    align-items: center;
+  }
+
+  .card-front,
+  .card-back {
+    padding: 8px;
+    font-size: 0.9rem;
   }
 
   .vehicle-image {
-    width: 100%;
-    max-height: 250px;
-    object-fit: cover;
+    width: 60%;
+    height: 20%;
+    margin-bottom: 10px;
   }
 
   .vehicle-details {
     grid-template-columns: 1fr;
-    width: 100%;
+    gap: 8px;
+    padding: 8px;
   }
 
   .vehicle-right {
     align-items: flex-start;
-    margin-top: 10px;
+  }
+
+  .vehicle-buttons {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .vehicle-price-container {
     text-align: left;
   }
+
+  .back-table {
+    margin-left: 0;
+    font-size: 0.9rem;
+  }
+
+  .back-table td:first-child,
+  .back-table td:nth-child(2),
+  .back-table td:last-child {
+    width: auto;
+    display: block;
+  }
+
+  .card-back .info-button {
+    top: 5px;
+    right: 5px;
+    font-size: 14px;
+  }
 }
 
-@media (max-width: 768px) {
-  .vehicle-buttons {
-    flex-direction: column;
-    gap: 5px;
+@media (min-width: 768px) and (max-width: 1024px) {
+  .vehicle-details {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
-  .vehicle-model {
-    font-size: 1em;
-  }
-
-  .vehicle-specs {
-    grid-template-columns: 1fr;
+  .vehicle-image {
+    width: 60%;
+    height: 20%;
   }
 
   .vehicle-price span {

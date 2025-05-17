@@ -16,12 +16,13 @@ interface Vehicle {
   Photo: string;
   AvailabilityStatus: string;
   Seats: number;
+  Year: number;
   Transmission: string;
   LargeBag: string;
-  UnlimitedMileage: string;
-  NormalCost: string;
+  FuelType: string;
   PricePerDay: string;
   Contact: string;
+  ImportantInfo: string;
   SellerName: string;
   SellerSurname: string;
   Color: string;
@@ -126,8 +127,8 @@ const Cars: React.FC = () => {
     });
 
   const handleViewDeal = (vehicle: Vehicle) => {
-    if (!startDate || !endDate) {
-      alert("Please select rental dates before proceeding.");
+    if (!startDate || !endDate || !startTime || !endTime) {
+      alert("Please select rental dates and times before proceeding.");
       return;
     }
 
@@ -142,16 +143,19 @@ const Cars: React.FC = () => {
       Model: vehicle.Model,
       StartDate: startDate.toISOString(),
       EndDate: endDate.toISOString(),
+      PickUpTime: startTime.toISOString(),
+      DropOffTime: endTime.toISOString(),
       PricePerDay: vehicle.PricePerDay,
       TotalPrice: totalPrice,
       Photo: vehicle.Photo,
       Address: vehicle.Address,
-      City: vehicle.City
+      City: vehicle.City,
     };
 
     localStorage.setItem("selectedVehicle", JSON.stringify(rentalData));
     window.location.href = "/view-deal";
   };
+
 
 
   if (loading) return <div>Loading vehicles...</div>;
@@ -161,7 +165,18 @@ const Cars: React.FC = () => {
     <ClientLayout>
       {!startDate || !endDate || !startTime || !endTime ? (
         <div className="date-selection-container">
-          <p className="date-selection-message">Select your pick up date.</p>
+          <select
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            style={{ width: "90%", padding: "10px", marginBottom: "10px" }}
+          >
+            <option value="">All Locations</option>
+            {uniqueCities.map((city) => (
+              <option key={city} value={city}>
+                {city.toUpperCase()}
+              </option>
+            ))}
+          </select>
           <div className="date-picker">
             <div className="date-picker-field">
               <label className="date-picker-label">Pick Up Date</label>
@@ -229,25 +244,19 @@ const Cars: React.FC = () => {
           <div className="filter-sidebar">
             {/* <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />  */}
             <h2>Filter by: </h2>
-            <h3>Şehir Filtrele</h3>
+            <h3>Change Location</h3>
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              style={{ width: "100%", padding: "10px", marginBottom: "20px" }}
+              style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
             >
-              <option value="">Tüm Şehirler</option>
+              <option value="">All Locations</option>
               {uniqueCities.map((city) => (
                 <option key={city} value={city}>
                   {city.toUpperCase()}
                 </option>
               ))}
             </select>
-            <input
-              type="text"
-              placeholder="Search by Brand or Model"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
             <h3>Price per Day</h3>
             {["0-50", "50-100", "100-150", "150-200", "200+"].map(range => (
               <label key={range}>
@@ -297,16 +306,23 @@ const Cars: React.FC = () => {
 
           <div className="vehicles-list" style={{ width: "70%" }}>
             <h1>Available Cars</h1>
+            <input
+              type="text"
+              placeholder="Search by Brand or Model"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="brand-search"
+              style={{ width: "100%" }}
+            />
             <select
               onChange={(e) => setSortBy(e.target.value)}
               value={sortBy}
-              style={{ width: "100%", padding: "10px", marginBottom: "20px" }}
+              style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
             >
-              <option value="price">Fiyata Göre (Artan)</option>
-              <option value="seats">Koltuk Sayısına Göre</option>
-              <option value="brand">Markaya Göre</option>
+              <option value="price">By Price</option>
+              <option value="seats">By Number of Seats</option>
+              <option value="brand">By Brand</option>
             </select>
-
             <div className="date-picker">
               <div className="date-picker-field">
                 <label className="date-picker-label">Pick Up Date</label>
@@ -385,6 +401,12 @@ const Cars: React.FC = () => {
                   price={vehicle.PricePerDay}
                   largeBag={vehicle.LargeBag}
                   seats={vehicle.Seats}
+                  fuelType={vehicle.FuelType}
+                  contact={vehicle.Contact}
+                  year={vehicle.Year}
+                  importantInfo={vehicle.ImportantInfo}
+                  sellerName={vehicle.SellerName}
+                  sellerSurname={vehicle.SellerSurname}
                   onViewDealClick={() => handleViewDeal(vehicle)}
                 />
               ))

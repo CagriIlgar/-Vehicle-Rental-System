@@ -1,17 +1,16 @@
 @import url("../../../styles/colors.css");
 
 .profile-container {
-  color: var(--dark);
-  background-color: var(--grey);
+  background-color: var(--color-gray-200);
   padding: 20px;
   border-radius: 10px;
   width: 75%;
-  margin: 20px auto;
+  margin: 50px auto;
 }
 
 .profile-header {
   font-size: 32px;
-  color: var(--secondary);
+  color: var(--color-primary-50);
   margin-bottom: 15px;
 }
 
@@ -33,53 +32,12 @@
   margin: 10px;
 }
 
-.user-greeting,
-.user-email {
+.user-greeting {
   font-size: 18px;
-  color: var(--dark);
-}
-
-.rental-info {
-  margin-top: 40px;
-}
-
-.rental-title {
-  font-size: 24px;
-  color: var(--yellow);
-  margin-bottom: 15px;
-}
-
-.rental-details,
-.previous-rentals {
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.rental-details p,
-.previous-rental p {
-  font-size: 16px;
-  margin: 5px 0;
-}
-
-.preious-rental {
-  margin-bottom: 10px;
-}
-
-.return-car-btn {
-  background-color: var(--green);
-  color: var(--light);
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-  transition: background-color 0.3s;
 }
 
 .sign-out-btn {
-  background-color: var(--red);
+  background-color: var(--color-warning);
   color: white;
   border: none;
   border-radius: 5px;
@@ -95,8 +53,8 @@
 }
 
 .add-car-btn {
-  background-color: var(--secondary);
-  color: black;
+  background-color: var(--color-primary-50);
+  color: var(--color-white);
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -107,13 +65,13 @@
 }
 
 .loading-text {
-  color: var(--secondary);
+  color: var(--color-primary-50);
   font-size: 18px;
 }
 
 .not-signed-in {
   font-size: 20px;
-  color: var(--secondary);
+  color: var(--color-primary-50);
   margin-bottom: 20px;
 }
 
@@ -121,17 +79,12 @@
 .user-email,
 .rental-details p,
 .previous-rental p {
-  color: var(--dark);
+  color: var(--text-default);
 }
 
 .profile-toggle {
   margin: 20px 0;
   text-align: center;
-}
-
-.business-checkbox-label {
-  font-size: 18px;
-  color: var(--light);
 }
 
 .business-cars-list {
@@ -140,26 +93,19 @@
   flex-direction: column;
   gap: 15px;
   padding: 20px;
-  background-color: var(--grey);
+  background-color: var(--color-gray-100);
   border-radius: 10px;
-  box-shadow: 0 0 5px var(--light);
-}
-
-.business-car-item {
-  padding: 10px;
-  background-color: var(--light);
-  border: 1px solid var(--secondary);
-  border-radius: 5px;
+  box-shadow: 0 0 5px var(--color-primary-50);
 }
 
 .no-cars {
-  color: var(--dark);
+  color: var(--text-default);
   text-align: center;
 }
 
 .business-title {
   font-size: 24px;
-  color: var(--secondary);
+  color: var(--color-primary-50);
   margin-bottom: 15px;
 }
 
@@ -172,17 +118,19 @@
   background-color: grey;
 }
 
-.delete-btn {
+.delete-btn,
+.delete-location-btn {
   margin-top: 8px;
   padding: 6px 12px;
-  background-color: #ff4d4f;
+  background-color: var(--color-warning);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
 }
 
-.delete-btn:hover {
+.delete-btn:hover,
+.delete-location-btn:hover {
   background-color: #e04344;
 }
 
@@ -194,10 +142,10 @@
 }
 
 .vehicles {
-  border: 1px solid #ccc;
+  border: 1px solid var(--text-default);
   border-radius: 12px;
   padding: 16px;
-  background-color: var(--light);
+  background-color: var(--bg-card);
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -207,21 +155,11 @@
   margin-bottom: 20px;
 }
 
-.location-form input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
 .add-location-btn {
   width: 100%;
   padding: 10px;
-  background-color: var(--blue);
-  color: var(--light);
+  background-color: var(--button-blue-100);
+  color: var(--text-default);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -230,12 +168,6 @@
 
 .add-location-btn:hover {
   background-color: #0056b3;
-}
-
-.location-form p {
-  margin-top: 10px;
-  text-align: center;
-  color: green;
 }
 
 .business-section-flex {
@@ -253,29 +185,20 @@
   flex: 1;
   min-width: 300px;
   max-width: 400px;
-  background-color: var(--light);
+  background-color: var(--color-gray-100);
   padding: 20px;
   border-radius: 10px;
   height: 100%;
+  box-shadow: 0 0 5px var(--color-primary-50);
 }
 
 .location-form input,
 .location-form select {
   width: 100%;
   margin-bottom: 10px;
+  border-radius: 5px;
   padding: 8px;
-  border-radius: 5px;
-  border: 1px solid var(--dark);
-}
-
-.add-location-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: var(--blue);
-  color: var(--light);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  font-size: 14px;
 }
 
 .business-locations-list {
@@ -290,11 +213,10 @@
 }
 
 .location-item {
-  background-color: var(--light);
+  background-color: var(--color-gray-100);
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid var(--secondary);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 3px var(--color-primary-50);
   font-size: 13px;
 
   width: 100%;
@@ -303,11 +225,21 @@
   word-wrap: break-word;
 }
 
-
 .location-item p {
   margin: 2px 0;
   font-size: 13px;
 }
+
+.update-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: var(--color-success);
+}
+
 
 /* Responsive tasarım */
 @media (max-width: 1024px) {

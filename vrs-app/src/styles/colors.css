@@ -21,7 +21,6 @@
     /* Status and Button Colors */
     --color-success: #027d39;
     --color-warning: #ff0000;
-
     --button-blue-50: #3B82F6;
     --button-blue-100: #2563EB;
     --button-blue-200: #00109B;
@@ -45,18 +44,4 @@
     --color-gray-50: #3f3f3f;
     --color-gray-100: #7E7E7E;
     --color-gray-200: #D9D9D9;
-
-
-    --background: #ffffff;
-    --primary: #f0f0f0;
-    --secondary: #F7B901;
-    --blue: #2563EB;
-    --blueMid: #3B82F6;
-    --green: #027d39;
-    --darkBlue: #00109B;
-    --grey: #333333;
-    --darkGrey: #555555;
-    --light: #000000;
-    --red: #ffdddd;
-    --dark: #000000;
 }

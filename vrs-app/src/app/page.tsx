@@ -33,6 +33,13 @@ const Card: React.FC<CardProps> = ({ image, title, navigateTo }) => {
 };
 
 const HomePage: React.FC = () => {
+
+    const router = useRouter();
+
+    const handleThingsClick = (path: string) => {
+        router.push(path);
+    };
+
     return (
         <ClientLayout>
             <div
@@ -66,25 +73,41 @@ const HomePage: React.FC = () => {
                 <section className="things-to-do-section">
                     <h2 className="things-title">Things to do in Cyprus</h2>
                     <div className="things-grid">
-                        <div className="things-card">
+                        <div
+                            className="things-card"
+                            onClick={() => handleThingsClick("/things/beaches")}
+                            style={{ cursor: "pointer" }}
+                        >
                             <img src="/beach.jpg" alt="Beach" />
                             <h3>
                                 <span className="things-link">RELAX ON THE BEACH:</span> Cyprus is well known for its beautiful sandy beaches and the crystal clear waters. You can find a wealth of beaches and the one you desire.
                             </h3>
                         </div>
-                        <div className="things-card">
+                        <div
+                            className="things-card"
+                            onClick={() => handleThingsClick("/things/places")}
+                            style={{ cursor: "pointer" }}
+                        >
                             <img src="/places.jpg" alt="Places to Visit" />
                             <h3>
                                 <span className="things-link">PLACES TO VISIT:</span> Rent a car in Cyprus with us and get ready to discover an island of compelling culture and landscapes, steeped in myth and riddled with ancient riches.
                             </h3>
                         </div>
-                        <div className="things-card">
+                        <div
+                            className="things-card"
+                            onClick={() => handleThingsClick("/things/nightlife")}
+                            style={{ cursor: "pointer" }}
+                        >
                             <img src="/nightlife.jpg" alt="Nightlife" />
                             <h3>
                                 <span className="things-link">CYPRUS NIGHTLIFE:</span> Whatever you opt for, Cyprus has it. A huge range of stylish cafes and bars, pubs, chic lounges, jet set beach clubs, music bars or dance clubs.
                             </h3>
                         </div>
-                        <div className="things-card">
+                        <div
+                            className="things-card"
+                            onClick={() => handleThingsClick("/things/cuisine")}
+                            style={{ cursor: "pointer" }}
+                        >
                             <img src="/cuisine.jpg" alt="Cuisine" />
                             <h3>
                                 <span className="things-link">CYPRUS CUISINE:</span> Your holidays in Cyprus will not be complete without tasting some traditional Cypriot dishes and delicacies.
