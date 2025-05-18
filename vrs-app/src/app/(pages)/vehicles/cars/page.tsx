@@ -242,7 +242,7 @@ const Cars: React.FC = () => {
       ) : (
         <div className="vehicles-container" style={{ display: "flex", padding: "20px" }}>
           <div className="filter-sidebar">
-            {/* <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />  */}
+            <MapComponent center={{ lat: 35.1856, lng: 33.3823 }} zoom={12} vehicles={vehicles} />
             <h2>Filter by: </h2>
             <h3>Change Location</h3>
             <select
