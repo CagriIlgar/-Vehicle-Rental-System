@@ -16,27 +16,30 @@ interface MapComponentProps {
 
 const MapComponent: React.FC<MapComponentProps> = ({ center, zoom, vehicles }) => {
     const mapRef = useRef<HTMLDivElement>(null);
+    const mapInstance = useRef<google.maps.Map | null>(null); // 👈 persist map
 
     useEffect(() => {
         const loadMap = () => {
             if (typeof window !== "undefined" && window.google && mapRef.current) {
-                //const map = new google.maps.Map(mapRef.current, {
-                    //center,
-                    //zoom,
-                //});
+                if (!mapInstance.current) {
+                    mapInstance.current = new google.maps.Map(mapRef.current, {
+                        center,
+                        zoom,
+                    });
+                }
 
-                // Loop through vehicles and add a marker for each one
+                // Clear existing markers logic could go here if you re-render markers
+
                 vehicles.forEach((vehicle) => {
                     const lat = parseFloat(vehicle.Latitude.toString());
                     const lng = parseFloat(vehicle.Longitude.toString());
 
-                    // Ensure lat and lng are valid numbers
                     if (!isNaN(lat) && !isNaN(lng)) {
-                        //const marker = new google.maps.Marker({
-                          //  position: { lat, lng },
-                            //map,
-                            //title: `${vehicle.Brand} ${vehicle.Model}`,
-                        //});
+                        new google.maps.Marker({
+                            position: { lat, lng },
+                            map: mapInstance.current!,
+                            title: `${vehicle.Brand} ${vehicle.Model}`,
+                        });
                     } else {
                         console.warn(`Invalid coordinates for vehicle: ${vehicle.VehicleID}`);
                     }
