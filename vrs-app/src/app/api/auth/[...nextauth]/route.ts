@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { pool } from "../../../../lib/mysql";
 import bcrypt from "bcryptjs";
+import type { RowDataPacket } from "mysql2";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -23,34 +24,30 @@ const authOptions: NextAuthOptions = {
         }
 
         // Admin Login Handling
-        // ------------------------------------------------
-        const [adminRows]: any[] = await pool.execute(
+        const [adminRows] = await pool.execute(
           "SELECT * FROM admin WHERE AdminEmail = ?",
           [credentials.email]
-        );
+        ) as [RowDataPacket[], unknown];
 
         if (adminRows.length > 0) {
           const admin = adminRows[0];
-          // Direct password comparison since admin passwords are not encrypted
           if (credentials.password !== admin.AdminPassword) {
             throw new Error("Invalid admin password");
           }
 
-          // Return Admin User Data
           return {
             id: admin.AdminID,
             name: admin.AdminName,
             email: admin.AdminEmail,
-            isAdmin: true, // Custom flag to identify admin users
+            isAdmin: true,
           };
         }
-        // ------------------------------------------------
 
         // Regular User Login Handling
-        const [rows]: any[] = await pool.execute(
+        const [rows] = await pool.execute(
           "SELECT * FROM users WHERE email = ?",
           [credentials.email]
-        );
+        ) as [RowDataPacket[], unknown];
 
         if (rows.length === 0) {
           throw new Error("No user found with the provided email");
@@ -64,11 +61,13 @@ const authOptions: NextAuthOptions = {
         }
 
         if (user.isBusiness === 1) {
-          const [sellerRows]: any[] = await pool.execute(
+          const [sellerRows] = await pool.execute(
             "SELECT * FROM seller WHERE BusinessEmail = ?",
             [user.email]
-          );
+          ) as [RowDataPacket[], unknown];
+
           const seller = sellerRows[0];
+
           return {
             id: seller.SellerID,
             name: seller.ContactPersonName,
@@ -84,11 +83,13 @@ const authOptions: NextAuthOptions = {
           };
         }
 
-        const [customerRows]: any[] = await pool.execute(
+        const [customerRows] = await pool.execute(
           "SELECT * FROM customer WHERE CustomerEmail = ?",
           [user.email]
-        );
+        ) as [RowDataPacket[], unknown];
+
         const customer = customerRows[0];
+
         return {
           id: customer.CustomerID,
           name: customer.CustomerName,
@@ -110,7 +111,7 @@ const authOptions: NextAuthOptions = {
       if (user?.surname) {
         token.surname = user.surname;
       }
-      if (user?.isBusiness) {
+      if (user?.isBusiness !== undefined) {
         token.isBusiness = user.isBusiness;
       }
       if (user?.id) {
@@ -122,7 +123,7 @@ const authOptions: NextAuthOptions = {
       if (user?.isBusiness && user.businessCity) {
         token.businessCity = user.businessCity;
       }
-      if (user?.isBusiness && user.approved) {
+      if (user?.isBusiness && user.approved !== undefined) {
         token.approved = user.approved;
       }
       if (user?.isBusiness && user.businessName) {
@@ -134,21 +135,17 @@ const authOptions: NextAuthOptions = {
       if (user?.isBusiness && user.longitude) {
         token.longitude = user.longitude;
       }
-
-      // Add isAdmin to JWT token
       if (user?.isAdmin) {
         token.isAdmin = user.isAdmin;
       }
 
-      console.log("Token after JWT callback:", token);
       return token;
     },
     async session({ session, token }) {
-      
       if (token.surname) {
         session.user.surname = token.surname as string;
       }
-      if (token.isBusiness) {
+      if (token.isBusiness !== undefined) {
         session.user.isBusiness = token.isBusiness as boolean;
       }
       if (token.businessPhone) {
@@ -160,26 +157,22 @@ const authOptions: NextAuthOptions = {
       if (token.id) {
         session.user.id = token.id as string;
       }
-      if (token.approved) {
+      if (token.approved !== undefined) {
         session.user.approved = token.approved as boolean;
       }
       if (token.businessName) {
         session.user.businessName = token.businessName as string;
       }
-      if (token.latitude) {
+      if (token.latitude !== undefined) {
         session.user.latitude = token.latitude as number;
       }
-      if (token.longitude) {
+      if (token.longitude !== undefined) {
         session.user.longitude = token.longitude as number;
       }
-  
-
-      // Add isAdmin to session
       if (token.isAdmin) {
         session.user.isAdmin = token.isAdmin as boolean;
       }
 
-      console.log("Session after Session callback:", session);
       return session;
     },
   },

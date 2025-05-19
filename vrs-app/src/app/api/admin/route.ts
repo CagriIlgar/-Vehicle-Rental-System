@@ -1,10 +1,26 @@
 import { pool } from "@/lib/mysql";
 import { NextResponse } from "next/server";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+
+// Define the expected shape of the seller row
+interface Seller extends RowDataPacket {
+    SellerID: number;
+    BusinessName: string;
+    Industry: string;
+    ContactPersonName: string;
+    ContactPersonSurname: string;
+    BusinessEmail: string;
+    BusinessCity: string;
+    BusinessAddress: string;
+    Password: string;
+    Approved: number;
+    BusinessPhone: string;
+    
+}
 
 export async function GET() {
     try {
-        const [rows]: any[] = await pool.execute("SELECT * FROM seller WHERE Approved = 0");
+        const [rows] = await pool.execute<Seller[]>("SELECT * FROM seller WHERE Approved = 0");
 
         return NextResponse.json({ businesses: rows });
     } catch (error) {

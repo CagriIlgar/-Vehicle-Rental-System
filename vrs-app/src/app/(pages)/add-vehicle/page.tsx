@@ -6,11 +6,23 @@ import FormGroup from "../../../components/FormGroup/FormGroup";
 import "./add-vehicle.css";
 import ClientLayout from "@/app/client-layout";
 
+type Location = {
+  LocationID: number;
+  SellerID: number;
+  LocationName: string;
+  LocationType: "Business" | "Sell Point";
+  Address: string;
+  City: string;
+  Latitude: number;
+  Longitude: number;
+};
+
+
 const AddVehicle: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
-  const [locations, setLocations] = useState<any[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
 
   useEffect(() => {
@@ -20,7 +32,6 @@ const AddVehicle: React.FC = () => {
     }
   }, [status, session, router]);
 
-  // Fetch locations based on seller ID
   useEffect(() => {
     const fetchLocations = async () => {
       if (!session?.user?.id) return;
@@ -55,7 +66,6 @@ const AddVehicle: React.FC = () => {
       });
 
       if (response.ok) {
-        const result = await response.json();
         alert("Vehicle added successfully!");
         if (formRef.current) formRef.current.reset();
       } else {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 interface Vehicle {
     VehicleID: number;
@@ -20,10 +20,10 @@ const MapComponent: React.FC<MapComponentProps> = ({ center, zoom, vehicles }) =
     useEffect(() => {
         const loadMap = () => {
             if (typeof window !== "undefined" && window.google && mapRef.current) {
-                const map = new google.maps.Map(mapRef.current, {
-                    center,
-                    zoom,
-                });
+                //const map = new google.maps.Map(mapRef.current, {
+                    //center,
+                    //zoom,
+                //});
 
                 // Loop through vehicles and add a marker for each one
                 vehicles.forEach((vehicle) => {
@@ -32,11 +32,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ center, zoom, vehicles }) =
 
                     // Ensure lat and lng are valid numbers
                     if (!isNaN(lat) && !isNaN(lng)) {
-                        const marker = new google.maps.Marker({
-                            position: { lat, lng },
-                            map,
-                            title: `${vehicle.Brand} ${vehicle.Model}`,
-                        });
+                        //const marker = new google.maps.Marker({
+                          //  position: { lat, lng },
+                            //map,
+                            //title: `${vehicle.Brand} ${vehicle.Model}`,
+                        //});
                     } else {
                         console.warn(`Invalid coordinates for vehicle: ${vehicle.VehicleID}`);
                     }

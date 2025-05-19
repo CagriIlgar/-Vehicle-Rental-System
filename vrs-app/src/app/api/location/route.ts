@@ -1,6 +1,18 @@
 import { pool } from "@/lib/mysql";
 import { NextResponse, NextRequest } from "next/server";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+
+// Define the type for a location row
+interface LocationRow extends RowDataPacket {
+    LocationID: number;
+    SellerID: number;
+    LocationName: string;
+    LocationType: string;
+    Address: string;
+    City: string;
+    Latitude: number;
+    Longitude: number;
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -11,7 +23,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ message: "Seller ID is required" }, { status: 400 });
         }
 
-        const [rows]: any[] = await pool.execute(
+        const [rows] = await pool.execute<LocationRow[]>(
             "SELECT * FROM location WHERE SellerID = ?",
             [sellerId]
         );
@@ -32,7 +44,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: "All fields are required" }, { status: 400 });
         }
 
-        const [result]: any = await pool.execute<ResultSetHeader>(
+        const [result] = await pool.execute<ResultSetHeader>(
             "INSERT INTO location (SellerID, LocationName, LocationType, Address, City, Latitude, Longitude) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [SellerID, LocationName, LocationType, Address, City, Latitude, Longitude]
         );
@@ -57,7 +69,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ message: "Location ID is required" }, { status: 400 });
         }
 
-        const [result]: any = await pool.execute<ResultSetHeader>(
+        const [result] = await pool.execute<ResultSetHeader>(
             "DELETE FROM location WHERE LocationID = ?",
             [locationId]
         );

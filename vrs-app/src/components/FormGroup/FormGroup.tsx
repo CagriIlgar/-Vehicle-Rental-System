@@ -10,7 +10,7 @@ interface FormGroupProps {
   required?: boolean;
   accept?: string;
   options?: string[];
-  defaultValue?: any;
+  defaultValue?: string | number | readonly string[] | undefined;
 }
 
 const FormGroup: React.FC<FormGroupProps> = ({

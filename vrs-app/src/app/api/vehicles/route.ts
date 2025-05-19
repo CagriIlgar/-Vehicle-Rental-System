@@ -1,96 +1,75 @@
-//api/vehicles/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '../../../lib/mysql';
 import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
+import type { RowDataPacket, OkPacket } from 'mysql2';
 
+// Helper to convert Web ReadableStream to Node Readable
 async function webStreamToNodeReadable(webStream: ReadableStream<Uint8Array>) {
   const reader = webStream.getReader();
   const stream = new Readable({
-    async read(size) {
+    async read() {
       try {
         const { done, value } = await reader.read();
-        if (done) {
-          this.push(null);
-        } else {
-          this.push(value);
-        }
+        this.push(done ? null : value);
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          this.destroy(error);
-        } else {
-          this.destroy(new Error('An unknown error occurred while reading the stream.'));
-        }
+        this.destroy(error instanceof Error ? error : new Error('Unknown stream error.'));
       }
     },
   });
-
   return stream;
 }
 
-// Handler for GET request (fetch vehicles with their locations)
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const sellerId = url.searchParams.get("sellerId");
 
     let query = `
-        SELECT 
-          v.VehicleID, 
-          v.Type, 
-          v.Brand, 
-          v.Model,
-          v.Year,  
-          v.FuelType, 
-          v.Transmission, 
-          v.Seats, 
-          v.PricePerDay, 
-          v.AvailabilityStatus, 
-          v.Color, 
-          v.Photo,
-          v.LargeBag,      
-          v.ImportantInfo, 
-          v.Contact,
-          v.LocationID,
-          l.Address,
-          l.City,
-          l.Latitude,
-          l.Longitude,
-          s.ContactPersonName as SellerName, 
-          s.ContactPersonSurname as SellerSurname
-        FROM vehicle v
-        LEFT JOIN seller s ON v.SellerID = s.SellerID
-        LEFT JOIN location l ON v.LocationID = l.LocationID
-      `;
+      SELECT 
+        v.VehicleID, 
+        v.Type, 
+        v.Brand, 
+        v.Model,
+        v.Year,  
+        v.FuelType, 
+        v.Transmission, 
+        v.Seats, 
+        v.PricePerDay, 
+        v.AvailabilityStatus, 
+        v.Color, 
+        v.Photo,
+        v.LargeBag,      
+        v.ImportantInfo, 
+        v.Contact,
+        v.LocationID,
+        l.Address,
+        l.City,
+        l.Latitude,
+        l.Longitude,
+        s.ContactPersonName as SellerName, 
+        s.ContactPersonSurname as SellerSurname
+      FROM vehicle v
+      LEFT JOIN seller s ON v.SellerID = s.SellerID
+      LEFT JOIN location l ON v.LocationID = l.LocationID
+    `;
 
-    const params: any[] = [];
+    const params: (string | null)[] = [];
 
     if (sellerId) {
       query += " WHERE v.SellerID = ?";
       params.push(sellerId);
     }
 
-    const [vehicles]: any[] = await pool.execute(query, params);
-
+    const [vehicles] = await pool.execute<RowDataPacket[]>(query, params);
     return NextResponse.json({ vehicles });
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error('Error fetching vehicles:', error.message);
-      return NextResponse.json(
-        { message: 'Failed to fetch vehicles', error: error.message },
-        { status: 500 }
-      );
-    } else {
-      console.error('An unknown error occurred:', error);
-      return NextResponse.json(
-        { message: 'Failed to fetch vehicles', error: 'Unknown error occurred' },
-        { status: 500 }
-      );
-    }
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error fetching vehicles:', message);
+    return NextResponse.json({ message: 'Failed to fetch vehicles', error: message }, { status: 500 });
   }
 }
-
 
 export async function POST(req: NextRequest) {
   try {
@@ -109,7 +88,6 @@ export async function POST(req: NextRequest) {
 
     const photoStream = photo.stream();
     const nodeReadableStream = await webStreamToNodeReadable(photoStream);
-
     const writeStream = fs.createWriteStream(photoPath);
     nodeReadableStream.pipe(writeStream);
 
@@ -131,16 +109,14 @@ export async function POST(req: NextRequest) {
       vehicleColor: color = '',
       largeBar: largeBag = '',
       info: importantInfo = '',
-      vehicleLocationID: locationID = null, // Ensure default value is null if not provided
+      vehicleLocationID: locationID = null,
       contact = '',
-      locationId = '',
       sellerId = '',
     } = Object.fromEntries(formData);
 
-    // Ensure LocationID is either set to null or a default value if not provided
     const finalLocationID = locationID ? locationID : null;
 
-    const [result]: any = await pool.execute(
+    const [result] = await pool.execute<OkPacket>(
       `INSERT INTO vehicle 
         (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, LocationID, SellerID) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -159,31 +135,28 @@ export async function POST(req: NextRequest) {
         color || null,
         importantInfo || null,
         contact || null,
-        finalLocationID,  // Use the finalLocationID here
+        finalLocationID,
         sellerId || null,
       ]
     );
 
     return NextResponse.json({ message: 'Vehicle added successfully!', vehicleId: result.insertId }, { status: 201 });
   } catch (error: unknown) {
-    console.error('Error in POST:', error);
-    if (error instanceof Error) {
-      return NextResponse.json({ message: 'Failed to add vehicle', error: error.message }, { status: 500 });
-    }
-    return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error in POST:', message);
+    return NextResponse.json({ message: 'Failed to add vehicle', error: message }, { status: 500 });
   }
 }
 
-//Delete vehicle
 export async function DELETE(req: NextRequest) {
   try {
-    const { vehicleID } = await req.json(); // Parse the JSON body
+    const { vehicleID }: { vehicleID?: number } = await req.json();
 
     if (!vehicleID) {
       return NextResponse.json({ message: 'Vehicle ID is required.' }, { status: 400 });
     }
 
-    const [result]: any = await pool.execute(
+    const [result] = await pool.execute<OkPacket>(
       `DELETE FROM vehicle WHERE VehicleID = ?`,
       [vehicleID]
     );
@@ -194,42 +167,33 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ message: 'Vehicle deleted successfully' }, { status: 200 });
   } catch (error: unknown) {
-    console.error('Error in DELETE:', error);
-    if (error instanceof Error) {
-      return NextResponse.json({ message: 'Failed to delete vehicle', error: error.message }, { status: 500 });
-    }
-    return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error in DELETE:', message);
+    return NextResponse.json({ message: 'Failed to delete vehicle', error: message }, { status: 500 });
   }
 }
+
 export async function PUT(req: NextRequest) {
   try {
-    const { VehicleID, AvailabilityStatus } = await req.json();
+    const { VehicleID, AvailabilityStatus }: { VehicleID?: number; AvailabilityStatus?: string } = await req.json();
 
     if (!VehicleID || !AvailabilityStatus) {
       return NextResponse.json({ message: 'VehicleID and AvailabilityStatus are required' }, { status: 400 });
     }
 
-    const query = `
-      UPDATE vehicle
-      SET AvailabilityStatus = ?
-      WHERE VehicleID = ?
-    `;
-
-    const params = [AvailabilityStatus, VehicleID];
-
-    const [result]: any = await pool.execute(query, params);
+    const [result] = await pool.execute<OkPacket>(
+      `UPDATE vehicle SET AvailabilityStatus = ? WHERE VehicleID = ?`,
+      [AvailabilityStatus, VehicleID]
+    );
 
     if (result.affectedRows > 0) {
-      return NextResponse.json({ message: "Availability status updated successfully" });
-    } else {
-      return NextResponse.json({ message: "Failed to update availability status" }, { status: 400 });
+      return NextResponse.json({ message: 'Availability status updated successfully' });
     }
+
+    return NextResponse.json({ message: 'Failed to update availability status' }, { status: 400 });
   } catch (error: unknown) {
-    console.error('Error in PUT:', error);
-    if (error instanceof Error) {
-      return NextResponse.json({ message: 'Failed to update availability status', error: error.message }, { status: 500 });
-    }
-    return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error in PUT:', message);
+    return NextResponse.json({ message: 'Failed to update availability status', error: message }, { status: 500 });
   }
 }
-

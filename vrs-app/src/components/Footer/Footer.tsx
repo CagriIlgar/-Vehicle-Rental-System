@@ -1,6 +1,7 @@
 import React from "react";
+import Link from "next/link"; // ✅ Import Link
 import "./footer.css";
-import { FaFacebook, FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6";
 
 const Footer: React.FC = () => {
     return (
@@ -14,11 +15,11 @@ const Footer: React.FC = () => {
                 <div className="footer-column">
                     <h3>Quick Links 🔗</h3>
                     <ul className="bullet-list">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/about">About Us</a></li>
-                        <li><a href="/profile">Profile</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                        <li><Link href="/">Home</Link></li>
+                        <li><Link href="/about">About Us</Link></li>
+                        <li><Link href="/profile">Profile</Link></li>
+                        <li><Link href="/contact">Contact</Link></li>
+                        <li><Link href="/privacy-policy">Privacy Policy</Link></li>
                     </ul>
                 </div>
 
@@ -33,7 +34,6 @@ const Footer: React.FC = () => {
 
                 <div className="footer-column">
                     <h3>Follow Us 🌐</h3>
-
                     <div className="social-icons">
                         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
                             <FaFacebookF size={36} />
@@ -45,7 +45,6 @@ const Footer: React.FC = () => {
                             <FaXTwitter size={36} />
                         </a>
                     </div>
-
                 </div>
             </div>
 

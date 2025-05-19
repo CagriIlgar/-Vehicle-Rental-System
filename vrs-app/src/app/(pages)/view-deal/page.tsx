@@ -3,8 +3,24 @@ import React, { useEffect, useState } from "react";
 import "./view-deal.css";
 import ClientLayout from "@/app/client-layout";
 
+type Vehicle = {
+    Photo: string;
+    Model: string;
+    Brand: string;
+    Transmission: string;
+    Address: string;
+    City: string;
+    StartDate: string;
+    EndDate: string;
+    PickUpTime: string;
+    DropOffTime: string;
+    TotalPrice: number;
+};
+
+
 const ViewDeal = () => {
-    const [vehicle, setVehicle] = useState<any>(null);
+    const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+
     const [extras, setExtras] = useState({ babySeat: 0, carCharger: 0 });
 
     useEffect(() => {
