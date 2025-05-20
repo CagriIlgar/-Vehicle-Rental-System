@@ -26,9 +26,9 @@ const Footer: React.FC = () => {
                 <div className="footer-column">
                     <h3>Contact Us 📞</h3>
                     <ul className="contact-list">
-                        <li>📍 123 Main Street, Istanbul, TR</li>
+                        <li>📍 Doğu Akdeniz Üniversitesi, Magusa/TRNC</li>
                         <li>📧 support@cyrent.com</li>
-                        <li>📱 +90 555 123 4567</li>
+                        <li>📱 +90 555 111 222</li>
                     </ul>
                 </div>
 

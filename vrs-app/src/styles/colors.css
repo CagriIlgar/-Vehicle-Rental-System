@@ -15,7 +15,7 @@
 
     /* Primary Colors */
     --color-primary-50: #F7B901;
-
+    --color-primary-100: #2b0532;
     --color-primary-400: #000c1d;
 
     /* Status and Button Colors */
@@ -34,8 +34,9 @@
     --text-default-2: #ffffff;
     --bg-card: #D9D9D9;
 
-
+    /* Primary Colors */
     --color-primary-50: #2b0532;
+    --color-primary-100: #F7B901;
 
 
     /* Natural / Gray Scale */

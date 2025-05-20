@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/contact-section.css";
+import "./contact-session.css";
 
 const ContactSection: React.FC = () => {
     return (
@@ -22,8 +22,8 @@ const ContactSection: React.FC = () => {
 
             <div className="contact-details">
                 <h3>Contact Details</h3>
-                <p><strong>Phone:</strong> +90 392 630 1518</p>
-                <p><strong>Email:</strong> cyrent@email.com</p>
+                <p><strong>Phone:</strong> +90 555 111 22 33</p>
+                <p><strong>Email:</strong> info@cyrent.com</p>
                 <p><strong>Location:</strong> Doğu Akdeniz Üniversitesi, Magusa/TRNC</p>
             </div>
         </section>

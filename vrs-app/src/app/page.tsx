@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import "../styles/home.css";
 import ClientLayout from "@/app/client-layout";
+import ContactSection from "@/components/ContactSection/ContactSection";
 
 type CardProps = {
     image: string;
@@ -45,7 +46,7 @@ const HomePage: React.FC = () => {
             <div
                 className="relative bg-cover bg-center min-h-screen"
                 style={{
-                    backgroundImage: "url('/home.jpg')",
+                    backgroundImage: "url('/home-first-section.png')",
                 }}
             >
                 <div className="home-info">
@@ -69,13 +70,15 @@ const HomePage: React.FC = () => {
                         <Card image="/home-bicycle.png" title="BICYCLES" navigateTo="/vehicles/bicycles" />
                     </div>
                 </div>
-                <div className="seperator"></div>
+            </div>
+
+            <div className="home-second-section-container">
                 <section className="things-to-do-section">
                     <h2 className="things-title">Things to do in Cyprus</h2>
                     <div className="things-grid">
                         <div
                             className="things-card"
-                            onClick={() => handleThingsClick("/things/beaches")}
+                            onClick={() => handleThingsClick("/relax-nature")}
                             style={{ cursor: "pointer" }}
                         >
                             <img src="/beach.jpg" alt="Beach" />
@@ -85,7 +88,7 @@ const HomePage: React.FC = () => {
                         </div>
                         <div
                             className="things-card"
-                            onClick={() => handleThingsClick("/things/places")}
+                            onClick={() => handleThingsClick("/places-to-visit")}
                             style={{ cursor: "pointer" }}
                         >
                             <img src="/places.jpg" alt="Places to Visit" />
@@ -95,7 +98,7 @@ const HomePage: React.FC = () => {
                         </div>
                         <div
                             className="things-card"
-                            onClick={() => handleThingsClick("/things/nightlife")}
+                            onClick={() => handleThingsClick("/night-life")}
                             style={{ cursor: "pointer" }}
                         >
                             <img src="/nightlife.jpg" alt="Nightlife" />
@@ -105,7 +108,7 @@ const HomePage: React.FC = () => {
                         </div>
                         <div
                             className="things-card"
-                            onClick={() => handleThingsClick("/things/cuisine")}
+                            onClick={() => handleThingsClick("/cuisine")}
                             style={{ cursor: "pointer" }}
                         >
                             <img src="/cuisine.jpg" alt="Cuisine" />
@@ -114,7 +117,17 @@ const HomePage: React.FC = () => {
                             </h3>
                         </div>
                     </div>
+                    <br />
                 </section>
+            </div>
+            <div
+                className="relative bg-cover bg-center py-20"
+                style={{
+                    backgroundImage: "url('/home.jpg')",
+                }}
+            >
+                <ContactSection />
+                <br />
             </div>
         </ClientLayout>
     );

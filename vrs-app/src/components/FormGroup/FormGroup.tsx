@@ -11,6 +11,7 @@ interface FormGroupProps {
   accept?: string;
   options?: string[];
   defaultValue?: string | number | readonly string[] | undefined;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }
 
 const FormGroup: React.FC<FormGroupProps> = ({
@@ -23,12 +24,19 @@ const FormGroup: React.FC<FormGroupProps> = ({
   accept,
   options,
   defaultValue,
+  onChange,
 }) => {
   return (
     <div className="form-group">
       <label htmlFor={id}>{label}</label>
       {options ? (
-        <select id={id} name={name} required={required} defaultValue={defaultValue}>
+        <select
+          id={id}
+          name={name}
+          required={required}
+          defaultValue={defaultValue}
+          onChange={onChange}
+        >
           <option value="">Select an option</option>
           {options.map((option) => (
             <option key={option} value={option}>
@@ -45,6 +53,7 @@ const FormGroup: React.FC<FormGroupProps> = ({
           required={required}
           accept={accept}
           defaultValue={defaultValue}
+          onChange={onChange}
         />
       )}
     </div>

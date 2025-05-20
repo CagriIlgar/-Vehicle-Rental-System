@@ -1,15 +1,15 @@
 @import url("../../../styles/colors.css");
 
 .aboutContainer {
+  width: 70%;
   max-width: 1500px;
-  margin: 20px auto;
-  padding: 0 20px;
+  margin: 60px auto;
 }
 
 .intro-section {
   background: linear-gradient(to right, var(--color-gray-200), var(--color-gray-50));
   text-align: center;
-  padding: 60px 20px;
+  padding: 30px 10px;
   animation: fadeInUp 1s ease-in-out;
 }
 
@@ -33,7 +33,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 40px;
-  padding: 60px 20px;
+  padding: 20px 10px;
   background-color: var(--color-gray-200);
   animation: slideInLeft 1s ease-in-out;
 }
@@ -49,6 +49,7 @@
   flex: 1;
   min-width: 300px;
   animation: fadeInUp 1.5s ease-in-out;
+  margin-left: 20px;
 }
 
 .section-title {
@@ -59,6 +60,7 @@
 }
 
 .about-text p {
+  margin-bottom: 10px;
   font-size: 0.9rem;
   line-height: 1.8;
   color: var(--text-default);
@@ -71,7 +73,8 @@
 }
 
 .image {
-  width: 100%;
+  margin: auto auto;
+  width: 60%;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;

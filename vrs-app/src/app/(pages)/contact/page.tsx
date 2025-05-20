@@ -1,6 +1,7 @@
 import React from "react";
 import "./contact.css";
 import ClientLayout from "@/app/client-layout";
+import ContactSection from "@/components/ContactSection/ContactSection";
 
 const Contact: React.FC = () => {
   return (
@@ -13,7 +14,7 @@ const Contact: React.FC = () => {
         <div className="contact-info">
           <div className="contact-info-item">
             <span role="img" aria-label="phone">📞</span>
-            <p>+90 392 630 1518</p>
+            <p>+90 555 111 222</p>
           </div>
           <div className="contact-info-item">
             <span role="img" aria-label="email">✉️</span>
@@ -26,6 +27,16 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="contact-footer">@CYRENT</div>
+
+      </div>
+      <div
+        className="relative bg-cover bg-center py-20"
+        style={{
+          backgroundImage: "url('/home.jpg')",
+        }}
+      >
+        <ContactSection />
+        <br />
       </div>
     </ClientLayout>
 

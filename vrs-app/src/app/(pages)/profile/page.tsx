@@ -51,6 +51,7 @@ const ProfilePage: React.FC = () => {
     Longitude: "",
   });
   const [message, setMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchLocations = async () => {
     if (session && session.user) {
@@ -213,6 +214,7 @@ const ProfilePage: React.FC = () => {
   }
 
   const isBusiness = session.user?.isBusiness;
+  const isApproved = session.user?.approved;
 
   return (
     <ClientLayout>
@@ -233,39 +235,61 @@ const ProfilePage: React.FC = () => {
           </p>
         </div>
 
-        {isBusiness && (
+        {message && (
+          <div className="message-box">
+            <p>{message}</p>
+          </div>
+        )}
+
+        {isBusiness && isApproved && (
           <div className="business-section">
-            <div>
+            <div className="action-buttons-container">
               <button
                 className="add-car-btn"
                 onClick={() => router.push("/add-vehicle")}
               >
                 Add a Vehicle
               </button>
+
+              <button className="add-car-btn" onClick={() => setIsModalOpen(true)}>
+                Add a Location
+              </button>
             </div>
 
             <div className="business-section-flex">
-              <div className="location-form">
-                <h2>Add Location</h2>
-                <input type="text" name="LocationName" value={locationData.LocationName} onChange={handleLocationChange} placeholder="Location Name" />
-                <select
-                  name="LocationType"
-                  value={locationData.LocationType}
-                  onChange={(e) =>
-                    setLocationData((prev) => ({ ...prev, LocationType: e.target.value }))
-                  }
-                >
-                  <option value="">Select Location Type</option>
-                  <option value="Sell Point">Sell Point</option>
-                  <option value="Business">Business</option>
-                </select>
-                <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Full Address" />
-                <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="Place or City" />
-                <input type="text" name="Latitude" value={locationData.Latitude} onChange={handleLocationChange} placeholder="Latitude" />
-                <input type="text" name="Longitude" value={locationData.Longitude} onChange={handleLocationChange} placeholder="Longitude" />
-                <button className="add-location-btn" onClick={addLocation}>Add Location</button>
-                {message && <p>{message}</p>}
-              </div>
+              {isModalOpen && (
+                <div className="modal-overlay">
+                  <div className="modal-content">
+                    <h2>Add Location</h2>
+                    <form onSubmit={addLocation}>
+                      <input type="text" name="LocationName" value={locationData.LocationName} onChange={handleLocationChange} placeholder="Location Name" required />
+
+                      <select
+                        name="LocationType"
+                        value={locationData.LocationType}
+                        onChange={(e) =>
+                          setLocationData((prev) => ({ ...prev, LocationType: e.target.value }))
+                        }
+                        required
+                      >
+                        <option value="">Select Location Type</option>
+                        <option value="Sell Point">Sell Point</option>
+                        <option value="Business">Business</option>
+                      </select>
+
+                      <input type="text" name="Address" value={locationData.Address} onChange={handleLocationChange} placeholder="Full Address" required />
+                      <input type="text" name="City" value={locationData.City} onChange={handleLocationChange} placeholder="Place or City" required />
+                      <input type="text" name="Latitude" value={locationData.Latitude} onChange={handleLocationChange} placeholder="Latitude" required />
+                      <input type="text" name="Longitude" value={locationData.Longitude} onChange={handleLocationChange} placeholder="Longitude" required />
+
+                      <div className="modal-buttons">
+                        <button className="add-location-btn" type="submit">Add</button>
+                        <button className="cancel-btn" type="button" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
 
               <div className="business-locations-list">
                 <h2 className="business-title">Your Locations</h2>
@@ -278,8 +302,8 @@ const ProfilePage: React.FC = () => {
                         <p><strong>{location.LocationName}</strong></p>
                         <p>{location.LocationType}</p>
                         <p>{location.Address}, {location.City}</p>
-                        <p>Latitude: {location.Latitude}</p>
-                        <p>Longitude: {location.Longitude}</p>
+                        <p>Latitude: {Number(location.Latitude).toFixed(3)}</p>
+                        <p>Longitude: {Number(location.Longitude).toFixed(3)}</p>
                         <button
                           className="delete-location-btn"
                           onClick={() => deleteLocation(location.LocationID)}
@@ -335,16 +359,14 @@ const ProfilePage: React.FC = () => {
                         >
                           Update Status
                         </button>
+
+                        <button
+                          className="delete-btn"
+                          onClick={() => deleteVehicle(vehicle.VehicleID)}
+                        >
+                          Delete
+                        </button>
                       </div>
-
-
-                      <button
-                        className="delete-btn"
-                        onClick={() => deleteVehicle(vehicle.VehicleID)}
-                      >
-                        Delete
-                      </button>
-
                     </div>
                   ))}
                 </div>
