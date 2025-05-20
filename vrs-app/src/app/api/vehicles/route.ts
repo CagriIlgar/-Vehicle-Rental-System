@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '../../../lib/mysql';
-import fs from 'fs';
-import path from 'path';
 import { Readable } from 'stream';
 import type { RowDataPacket, OkPacket } from 'mysql2';
+import { cloudinary } from '@/lib/cloudinary';
+import { buffer } from 'stream/consumers';
 
 // Helper to convert Web ReadableStream to Node Readable
 async function webStreamToNodeReadable(webStream: ReadableStream<Uint8Array>) {
@@ -80,21 +80,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Photo is required.' }, { status: 400 });
     }
 
-    const uploadsDir = path.join(process.cwd(), 'public/uploads');
-    await fs.promises.mkdir(uploadsDir, { recursive: true });
-
-    const photoName = `${Date.now()}-${photo.name}`;
-    const photoPath = path.join(uploadsDir, photoName);
-
     const photoStream = photo.stream();
     const nodeReadableStream = await webStreamToNodeReadable(photoStream);
-    const writeStream = fs.createWriteStream(photoPath);
-    nodeReadableStream.pipe(writeStream);
+    const photoBuffer = await buffer(nodeReadableStream);
 
-    await new Promise<void>((resolve, reject) => {
-      writeStream.on('finish', resolve);
-      writeStream.on('error', reject);
+    const cloudinaryResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: 'vehicle_photos',
+          public_id: `${Date.now()}-${photo.name}`,
+        },
+        (error, result) => {
+          if (error || !result) return reject(error);
+          resolve(result);
+        }
+      ).end(photoBuffer);
     });
+
+    // Tip belirt
+    const data = Object.fromEntries(formData) as Record<string, FormDataEntryValue>;
+
 
     const {
       vehicleType: type = '',
@@ -112,14 +117,14 @@ export async function POST(req: NextRequest) {
       vehicleLocationID: locationID = null,
       contact = '',
       sellerId = '',
-    } = Object.fromEntries(formData);
+    } = data;
 
-    const finalLocationID = locationID ? locationID : null;
+    const finalLocationID = locationID ? locationID.toString() : null;
 
     const [result] = await pool.execute<OkPacket>(
       `INSERT INTO vehicle 
-        (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, LocationID, SellerID) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (Type, Brand, Model, Year, FuelType, Transmission, Seats,  PricePerDay, Photo, LargeBag, AvailabilityStatus,  Color,   ImportantInfo, Contact, LocationID, SellerID) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         type || null,
         brand || null,
@@ -129,7 +134,7 @@ export async function POST(req: NextRequest) {
         transmission || null,
         seats || null,
         pricePerDay || null,
-        `/uploads/${photoName}`,
+        cloudinaryResult.secure_url, // Cloudinary URL
         largeBag || null,
         availability || null,
         color || null,
@@ -139,6 +144,7 @@ export async function POST(req: NextRequest) {
         sellerId || null,
       ]
     );
+
 
     return NextResponse.json({ message: 'Vehicle added successfully!', vehicleId: result.insertId }, { status: 201 });
   } catch (error: unknown) {
@@ -150,7 +156,8 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { vehicleID }: { vehicleID?: number } = await req.json();
+    const body = await req.json();
+    const vehicleID = body.vehicleID as number | undefined;
 
     if (!vehicleID) {
       return NextResponse.json({ message: 'Vehicle ID is required.' }, { status: 400 });
@@ -175,7 +182,9 @@ export async function DELETE(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const { VehicleID, AvailabilityStatus }: { VehicleID?: number; AvailabilityStatus?: string } = await req.json();
+    const body = await req.json();
+    const VehicleID = body.VehicleID as number | undefined;
+    const AvailabilityStatus = body.AvailabilityStatus as string | undefined;
 
     if (!VehicleID || !AvailabilityStatus) {
       return NextResponse.json({ message: 'VehicleID and AvailabilityStatus are required' }, { status: 400 });
