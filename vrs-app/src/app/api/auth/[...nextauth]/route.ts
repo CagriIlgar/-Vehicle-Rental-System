@@ -109,41 +109,37 @@ const authOptions: NextAuthOptions = {
     signOut: "/",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.email && !token.id) {
-        const [rows] = await pool.execute(
-          "SELECT * FROM users WHERE email = ?",
-          [user.email]
-        ) as [RowDataPacket[], unknown];
-
-        let userId;
-        let isBusiness = false;
-
-        if (rows.length === 0) {
-          const [insertUserResult] = await pool.execute<ResultSetHeader>(
-
-            "INSERT INTO users (email, isBusiness) VALUES (?, ?)",
-            [user.email, 0]
+    async signIn({ user }) {
+      if (user?.email) {
+        try {
+          const [rows] = await pool.execute<RowDataPacket[]>(
+            "SELECT * FROM users WHERE email = ?",
+            [user.email]
           );
 
-          userId = insertUserResult.insertId;
+          if (rows.length === 0) {
+            await pool.execute<ResultSetHeader>(
+              "INSERT INTO users (email, isBusiness) VALUES (?, ?)",
+              [user.email, 0]
+            );
 
-          await pool.execute(
-            "INSERT INTO customer (CustomerName, CustomerEmail) VALUES (?, ?)",
-            [user.name ?? "Unknown", user.email]
-          );
 
-        } else {
-          userId = rows[0].id;
-          isBusiness = rows[0].isBusiness === 1;
-
+            await pool.execute(
+              "INSERT INTO customer (CustomerName, CustomerEmail) VALUES (?, ?)",
+              [user.name ?? "Unknown", user.email]
+            );
+          }
+        } catch (error) {
+          console.error("signIn callback error:", error);
+          return false;
         }
-
-        token.id = userId;
-        token.email = user.email;
-        token.name = user.name;
-        token.isBusiness = isBusiness;
       }
+
+      return true;
+    },
+
+
+    async jwt({ token, user }) {
       if (user?.surname) {
         token.surname = user.surname;
       }
