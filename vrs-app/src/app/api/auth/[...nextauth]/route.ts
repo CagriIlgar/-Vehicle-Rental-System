@@ -5,8 +5,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { pool } from "../../../../lib/mysql";
 import bcrypt from "bcryptjs";
 import type { RowDataPacket } from "mysql2";
-import type { ResultSetHeader } from "mysql2";
-
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -109,36 +107,6 @@ const authOptions: NextAuthOptions = {
     signOut: "/",
   },
   callbacks: {
-    async signIn({ user }) {
-      if (user?.email) {
-        try {
-          const [rows] = await pool.execute<RowDataPacket[]>(
-            "SELECT * FROM users WHERE email = ?",
-            [user.email]
-          );
-
-          if (rows.length === 0) {
-            await pool.execute<ResultSetHeader>(
-              "INSERT INTO users (email, isBusiness) VALUES (?, ?)",
-              [user.email, 0]
-            );
-
-
-            await pool.execute(
-              "INSERT INTO customer (CustomerName, CustomerEmail) VALUES (?, ?)",
-              [user.name ?? "Unknown", user.email]
-            );
-          }
-        } catch (error) {
-          console.error("signIn callback error:", error);
-          return false;
-        }
-      }
-
-      return true;
-    },
-
-
     async jwt({ token, user }) {
       if (user?.surname) {
         token.surname = user.surname;

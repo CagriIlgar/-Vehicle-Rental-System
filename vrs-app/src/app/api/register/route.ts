@@ -3,11 +3,27 @@ import { pool } from '../../../lib/mysql';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
-  const { name, surname, email, password, dob, phone } = await request.json();
-  
+  const { name, surname, email, password, dob, phone, recaptchaToken } = await request.json();
 
-  if (!name || !surname || !email || !password || !dob || !phone) {
-    return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
+  if (!name || !surname || !email || !password || !dob || !phone || !recaptchaToken) {
+    return NextResponse.json({ message: 'All fields and reCAPTCHA token are required' }, { status: 400 });
+  }
+
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+
+  const verifyResponse = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      secret: secretKey || '',
+      response: recaptchaToken,
+    }),
+  });
+
+  const verifyData = await verifyResponse.json();
+
+  if (!verifyData.success) {
+    return NextResponse.json({ message: 'Failed reCAPTCHA verification' }, { status: 400 });
   }
 
   try {
