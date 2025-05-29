@@ -84,7 +84,7 @@ const Registration = () => {
     const response = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...formData, captchaToken }),
+      body: JSON.stringify({ ...formData, recaptchaToken: captchaToken }),
     });
 
     if (response.ok) {
