@@ -95,6 +95,8 @@ const Registration = () => {
     }
   };
 
+  
+
   return (
     <div className="registerPageContainer">
       <div className="logo" onClick={handleLogoClick}>CyRent</div>

@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
         transmission || null,
         seats || null,
         pricePerDay || null,
-        cloudinaryResult.secure_url, // Cloudinary URL
+        cloudinaryResult.secure_url, 
         largeBag || null,
         availability || null,
         color || null,

@@ -37,6 +37,23 @@ interface Location {
   Longitude: string;
 }
 
+interface Booking {
+  ReservationNumber: string | number;
+  Brand: string;
+  Model: string;
+  Year: string | number;
+  StartDate: string;
+  EndDate: string;
+  PickUpTime: string;
+  DropOffTime: string;
+  TotalCost: number;
+  Status: string;
+  Location: string;
+  DropoffAddress: string;
+  Photo: string;
+}
+
+
 const ProfilePage: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -52,6 +69,7 @@ const ProfilePage: React.FC = () => {
   });
   const [message, setMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   const fetchLocations = async () => {
     if (session && session.user) {
@@ -64,6 +82,19 @@ const ProfilePage: React.FC = () => {
       }
     }
   };
+  useEffect(() => {
+    const fetchCustomerBooking = async () => {
+      if (session?.user?.id && !session.user.isBusiness) {
+        const res = await fetch(`/api/booking?customerId=${session.user.id}`);
+        const data = await res.json();
+        if (res.ok && data.bookings) {
+          setBookings(data.bookings);
+        }
+      }
+    };
+
+    fetchCustomerBooking();
+  }, [session]);
 
   useEffect(() => {
     if (session && session.user) {
@@ -122,7 +153,7 @@ const ProfilePage: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ VehicleID: vehicleId, AvailabilityStatus: status }), // <-- Notice uppercase V
+        body: JSON.stringify({ VehicleID: vehicleId, AvailabilityStatus: status }),
       });
 
       const data = await response.json();
@@ -233,6 +264,33 @@ const ProfilePage: React.FC = () => {
           <p className="user-greeting">
             Welcome, <strong>{session?.user?.name}</strong>!
           </p>
+          {!isBusiness && bookings.length > 0 && (
+            <div className="booking-details">
+              <h2>Your Bookings</h2>
+              {bookings.map((booking) => (
+                <div key={booking.ReservationNumber} style={{ marginBottom: "20px" }}>
+                  <h2>{booking.Brand} {booking.Model} ({booking.Year})</h2>
+                  <p><strong>Reservation #:</strong> {booking.ReservationNumber}</p>
+                  
+                  <p><strong>Start Date:</strong> {new Date(booking.StartDate).toLocaleDateString()}</p>
+                  <p><strong>End Date:</strong> {new Date(booking.EndDate).toLocaleDateString()}</p>
+                  <p><strong>Pick Up Time:</strong> {booking.PickUpTime} </p>
+                  <p><strong>Dropp Off Time:</strong> {booking.DropOffTime}</p>
+
+                  <p><strong>Total Cost:</strong> ${booking.TotalCost}</p>
+                  <p><strong>Status:</strong> {booking.Status}</p>
+                  <p><strong>Pickup Location:</strong> {booking.Location}</p>
+                  <p><strong>Dropoff Address:</strong> {booking.DropoffAddress}</p>
+                  <img
+                    src={booking.Photo}
+                    alt="Vehicle"
+                    style={{ width: "300px", borderRadius: "8px", marginTop: "10px" }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
         </div>
 
         {message && (

@@ -301,6 +301,44 @@
 .add-location-btn:hover {
   background-color: #004599;
 }
+.booking-details {
+  background-color: var(--color-gray-100);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 5px var(--color-primary-50);
+  margin: 30px auto;
+  width: 90%;
+  max-width: 900px;
+}
+
+.booking-details h2 {
+  color: var(--color-primary-50);
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.booking-details div {
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.booking-details p {
+  margin: 6px 0;
+  color: var(--text-default);
+  font-size: 15px;
+}
+
+.booking-details img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  margin-top: 12px;
+  display: block;
+}
 
 
 /* Responsive tasarım */

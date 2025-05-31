@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import "./view-deal.css";
 import ClientLayout from "@/app/client-layout";
+import { useSession } from "next-auth/react";
 
 type Vehicle = {
+    VehicleID: number;
     Photo: string;
     Model: string;
     Brand: string;
@@ -17,26 +19,106 @@ type Vehicle = {
     TotalPrice: number;
 };
 
-
 const ViewDeal = () => {
+    const { data: session } = useSession();
     const [vehicle, setVehicle] = useState<Vehicle | null>(null);
-
     const [extras, setExtras] = useState({ babySeat: 0, carCharger: 0 });
 
     useEffect(() => {
         const storedVehicle = localStorage.getItem("selectedVehicle");
-
         if (storedVehicle) {
             setVehicle(JSON.parse(storedVehicle));
         }
     }, []);
 
+    const extraPrice = extras.babySeat * 10 + extras.carCharger * 5;
+    const totalCost = vehicle ? vehicle.TotalPrice + extraPrice : 0;
+
+    const updateVehicleStatus = async (vehicleId: number, status: string) => {
+        try {
+            const response = await fetch("/api/vehicles", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ VehicleID: vehicleId, AvailabilityStatus: status }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(`Failed to update status: ${data.message || "Unknown error"}`);
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error("Error updating vehicle status:", error);
+            alert("Failed to update vehicle status");
+            return false;
+        }
+    };
+
+    const handlePayNow = async () => {
+        const userId = session?.user?.id;
+        const userEmail = session?.user?.email;
+
+        if (!vehicle || !userId || !userEmail) {
+            alert("Missing Information!");
+            return;
+        }
+
+        const confirmed = window.confirm("Are you sure?");
+        if (!confirmed) return;
+
+        const payload = {
+            startDate: vehicle.StartDate,
+            endDate: vehicle.EndDate,
+            totalCost: totalCost,
+            customerId: userId,
+            vehicleId: vehicle.VehicleID,
+            location: `${vehicle.Address} ${vehicle.City}`,
+            dropoffAddress: `${vehicle.Address} ${vehicle.City}`,
+            pickUpTime: vehicle.PickUpTime,
+            dropOffTime: vehicle.DropOffTime,
+        };
+
+        try {
+            const res = await fetch("/api/booking", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+                const updated = await updateVehicleStatus(vehicle.VehicleID, "Rented");
+
+                if (updated) {
+                    await fetch("/api/send-booking-mail", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            to: userEmail,
+                            vehicle: vehicle,
+                            totalPrice: totalCost,
+                            extras: extras,
+                        }),
+                    });
+
+                    window.location.href = "/profile";
+                }
+            } else {
+                alert("Booking failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong!");
+        }
+    };
+
+
     if (!vehicle) {
         return <div>Loading vehicle details...</div>;
     }
-
-    const extraPrice = extras.babySeat * 10 + extras.carCharger * 5;
-    const totalCost = vehicle.TotalPrice + extraPrice;
 
     return (
         <ClientLayout>
@@ -50,6 +132,7 @@ const ViewDeal = () => {
                             <p>🧳 Large bag &nbsp; ♾️ Unlimited mileage</p>
                         </div>
                     </div>
+
                     <div className="pickup-location">
                         <div>
                             <h3>Pick Up Location</h3>
@@ -60,6 +143,7 @@ const ViewDeal = () => {
                             <p>{vehicle.Address} {vehicle.City}</p>
                         </div>
                     </div>
+
                     <div className="location-info">
                         <div>
                             <h3>Pick-up Date & Time</h3>
@@ -80,30 +164,9 @@ const ViewDeal = () => {
                                 <p>Weight: up to 18 kg</p>
                             </div>
                             <div className="extra-action">
-                                <button
-                                    onClick={() =>
-                                        setExtras((prev) => ({
-                                            ...prev,
-                                            babySeat: Math.max(prev.babySeat - 1, 0)
-                                        }))
-                                    }
-                                >
-                                    -
-                                </button>
-
+                                <button onClick={() => setExtras(prev => ({ ...prev, babySeat: Math.max(prev.babySeat - 1, 0) }))}>-</button>
                                 <span>{extras.babySeat}</span>
-
-                                <button
-                                    onClick={() =>
-                                        setExtras((prev) => ({
-                                            ...prev,
-                                            babySeat: Math.min(prev.babySeat + 1, 3)
-                                        }))
-                                    }
-                                >
-                                    +
-                                </button>
-
+                                <button onClick={() => setExtras(prev => ({ ...prev, babySeat: Math.min(prev.babySeat + 1, 3) }))}>+</button>
                             </div>
                         </div>
 
@@ -114,27 +177,9 @@ const ViewDeal = () => {
                                 <p>A simple cigarette lighter USB adapter to charge any USB device on the go.</p>
                             </div>
                             <div className="extra-action">
-                                <button
-                                    onClick={() =>
-                                        setExtras((prev) => ({
-                                            ...prev,
-                                            carCharger: Math.max(prev.carCharger - 1, 0)
-                                        }))
-                                    }
-                                >
-                                    -
-                                </button>
+                                <button onClick={() => setExtras(prev => ({ ...prev, carCharger: Math.max(prev.carCharger - 1, 0) }))}>-</button>
                                 <span>{extras.carCharger}</span>
-                                <button
-                                    onClick={() =>
-                                        setExtras((prev) => ({
-                                            ...prev,
-                                            carCharger: Math.min(prev.carCharger + 1, 2)
-                                        }))
-                                    }
-                                >
-                                    +
-                                </button>
+                                <button onClick={() => setExtras(prev => ({ ...prev, carCharger: Math.min(prev.carCharger + 1, 2) }))}>+</button>
                             </div>
                         </div>
                     </div>
@@ -145,7 +190,7 @@ const ViewDeal = () => {
                         <p>Total Price: <strong>${totalCost}</strong></p>
                     </div>
 
-                    <button className="pay-now">Pay Now!</button>
+                    <button className="pay-now" onClick={handlePayNow}>Book Now!</button>
                 </div>
             </div>
         </ClientLayout>

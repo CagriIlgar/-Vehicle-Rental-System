@@ -1,161 +1,153 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from '../../../lib/mysql';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { pool } from '@/lib/mysql';
+import type { RowDataPacket } from 'mysql2';
 
-// Define types
-interface Booking extends RowDataPacket {
-    BookingID: number;
+interface BookingRow extends RowDataPacket {
+    ReservationNumber: string;
     StartDate: string;
     EndDate: string;
     TotalCost: number;
     Status: string;
     Location: string;
-    CustomerName: string;
-    CustomerSurname: string;
+    DropoffAddress: string;
+    PickUpTime: string;
+    DropOffTime: string;
+
+    VehicleID: number;
+    Type: string;
     Brand: string;
     Model: string;
-    Accessories?: Accessory[];
+    Year: number;
+    FuelType: string;
+    Transmission: string;
+    Seats: number;
+    PricePerDay: number;
+    AvailabilityStatus: string;
+    Color: string;
+    Photo: string;
+    LargeBag: number;
+    ImportantInfo: string;
+    Contact: string;
+    LocationID: number;
+    Address: string;
+    City: string;
+    Latitude: number;
+    Longitude: number;
+    SellerName: string;
+    SellerSurname: string;
 }
 
-interface Accessory extends RowDataPacket {
-    AccessoryID: number;
-    AccessoryName: string;
-    Quantity: number;
-    TotalCost: number;
+
+function formatDateForMySQL(dateString: string): string {
+    const date = new Date(dateString);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-// GET: Fetch all booking details with accessories
-export async function GET() {
-    try {
-        const [bookings] = await pool.execute<Booking[]>(`
-      SELECT 
-        b.BookingID, b.StartDate, b.EndDate, b.TotalCost, b.Status, b.Location,
-        c.CustomerName, c.CustomerSurname, v.Brand, v.Model
-      FROM booking b
-      JOIN customer c ON b.CustomerID = c.CustomerID
-      JOIN vehicle v ON b.VehicleID = v.VehicleID
-      ORDER BY b.StartDate DESC
-    `);
-
-        for (const booking of bookings) {
-            const [accessories] = await pool.execute<Accessory[]>(
-                `SELECT a.AccessoryID, a.AccessoryName, ba.Quantity, ba.TotalCost
-         FROM booking_accessory ba
-         JOIN accessory a ON ba.AccessoryID = a.AccessoryID
-         WHERE ba.BookingID = ?`,
-                [booking.BookingID]
-            );
-            booking.Accessories = accessories;
-        }
-
-        return NextResponse.json({ bookings });
-    } catch (error) {
-        console.error('Error fetching bookings:', error);
-        return NextResponse.json(
-            { message: 'Failed to fetch bookings', error: (error as Error).message },
-            { status: 500 }
-        );
+function generateRandomString(length: number): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    return result;
 }
 
-// POST: Create a new booking with optional accessories
+async function generateReservationNumber(): Promise<string> {
+    const year = new Date().getFullYear();
+
+    const [rows] = await pool.execute<BookingRow[]>(
+        `SELECT COUNT(*) AS count FROM booking WHERE YEAR(StartDate) = ?`,
+        [year]
+    );
+
+    const count = rows[0].count + 1;
+    const paddedCount = count.toString().padStart(2, '0');
+    const randomSuffix = generateRandomString(20);
+
+    return `CYRENT-${year}-${paddedCount}-${randomSuffix}`;
+}
+
+function formatDateTimeForMySQL(dateString: string): string {
+    const date = new Date(dateString);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 export async function POST(req: NextRequest) {
     try {
-        const formData = await req.formData();
-        const formValues = Object.fromEntries(formData);
+        const data = await req.json();
 
-        const { startDate, endDate, totalCost, customerId, vehicleId, location } = formValues;
-        let accessories = formData.get('accessories');
+        const formattedPickUpTime = formatDateTimeForMySQL(data.pickUpTime);
+        const formattedDropOffTime = formatDateTimeForMySQL(data.dropOffTime);
+        const reservationNumber = await generateReservationNumber();
 
-        if (!startDate || !endDate || !totalCost || !customerId || !vehicleId || !location) {
-            return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-        }
-
-        const [bookingResult] = await pool.execute<ResultSetHeader>(
-            `INSERT INTO booking (StartDate, EndDate, TotalCost, CustomerID, VehicleID, Location) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-            [startDate, endDate, totalCost, customerId, vehicleId, location]
+        await pool.execute(
+            `INSERT INTO booking
+    (ReservationNumber, StartDate, EndDate, TotalCost, Status, CustomerID, VehicleID, Location, DropoffAddress, PickUpTime, DropOffTime)
+    VALUES (?, ?, ?, ?, 'Pending', ?, ?, ?, ?, ?, ?)`,
+            [
+                reservationNumber,
+                formatDateForMySQL(data.startDate),
+                formatDateForMySQL(data.endDate),
+                data.totalCost,
+                data.customerId,
+                data.vehicleId,
+                data.location,
+                data.dropoffAddress,
+                formattedPickUpTime,
+                formattedDropOffTime
+            ]
         );
-        const bookingId = bookingResult.insertId;
 
-        if (accessories && typeof accessories === 'string' && accessories.trim() !== '') {
-            try {
-                // Clean extra quotes from stringified JSON
-                if (accessories.startsWith('"') && accessories.endsWith('"')) {
-                    accessories = accessories.slice(1, -1);
-                }
+        return NextResponse.json({
+            message: 'Booking created successfully.',
+            reservationNumber,
+        }, { status: 201 });
 
-                const accessoryList = JSON.parse(accessories);
-
-                if (!Array.isArray(accessoryList)) {
-                    throw new Error('Accessories must be an array.');
-                }
-
-                for (const accessory of accessoryList) {
-                    const { accessoryId, quantity, totalCost } = accessory;
-
-                    if (!accessoryId || !quantity || !totalCost) {
-                        return NextResponse.json({ message: 'Invalid accessory data format' }, { status: 400 });
-                    }
-
-                    const [check] = await pool.execute<RowDataPacket[]>(
-                        'SELECT 1 FROM accessory WHERE AccessoryID = ?',
-                        [accessoryId]
-                    );
-
-                    if (check.length === 0) {
-                        return NextResponse.json({ message: `Accessory ID ${accessoryId} does not exist.` }, { status: 400 });
-                    }
-
-                    await pool.execute(
-                        `INSERT INTO booking_accessory (BookingID, AccessoryID, Quantity, TotalCost) 
-             VALUES (?, ?, ?, ?)`,
-                        [bookingId, accessoryId, quantity, totalCost]
-                    );
-                }
-            } catch (err) {
-                console.error('Error parsing accessories:', err);
-                return NextResponse.json({ message: 'Invalid accessory data format' }, { status: 400 });
-            }
-        }
-
-        return NextResponse.json({ message: 'Booking created successfully!', bookingId }, { status: 201 });
     } catch (error) {
-        console.error('Error in POST:', error);
-        return NextResponse.json(
-            { message: 'Failed to create booking', error: (error as Error).message },
-            { status: 500 }
-        );
+        console.error('Booking error:', error);
+        return NextResponse.json({ error: 'Failed to create booking.' }, { status: 500 });
     }
 }
 
-// DELETE: Delete booking and its accessories
-export async function DELETE(req: NextRequest) {
+export async function GET(req: NextRequest) {
     try {
-        const { searchParams } = new URL(req.url);
-        const bookingId = searchParams.get('id');
+        const url = new URL(req.url);
+        const customerId = url.searchParams.get("customerId");
 
-        if (!bookingId) {
-            return NextResponse.json({ message: 'Booking ID is required' }, { status: 400 });
+        if (!customerId) {
+            return NextResponse.json({ message: "Customer ID is required." }, { status: 400 });
         }
 
-        await pool.execute('DELETE FROM booking_accessory WHERE BookingID = ?', [bookingId]);
-
-        const [result] = await pool.execute<ResultSetHeader>(
-            'DELETE FROM booking WHERE BookingID = ?',
-            [bookingId]
+        const [rows] = await pool.execute<BookingRow[]>(
+            `SELECT 
+    b.ReservationNumber,
+    b.StartDate,
+    b.EndDate,
+    b.TotalCost,
+    b.Status,
+    b.Location,
+    b.DropoffAddress,
+    b.PickUpTime,
+    b.DropOffTime,
+    v.*
+    FROM booking b
+    JOIN vehicle v ON b.VehicleID = v.VehicleID
+    WHERE b.CustomerID = ? AND b.Status != 'Cancelled'
+    ORDER BY b.StartDate DESC`
+            ,
+            [customerId]
         );
 
-        if (result.affectedRows === 0) {
-            return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
+        if (rows.length === 0) {
+            return NextResponse.json({ bookings: [] }, { status: 200 });
         }
 
-        return NextResponse.json({ message: 'Booking and its accessories removed successfully' });
+        return NextResponse.json({ bookings: rows }, { status: 200 });
+
     } catch (error) {
-        console.error('Error in DELETE:', error);
-        return NextResponse.json(
-            { message: 'Failed to remove booking', error: (error as Error).message },
-            { status: 500 }
-        );
+        console.error("Error fetching booking:", error);
+        return NextResponse.json({ message: "Server error." }, { status: 500 });
     }
 }
