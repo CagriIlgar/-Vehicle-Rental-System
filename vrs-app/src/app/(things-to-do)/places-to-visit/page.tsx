@@ -40,7 +40,7 @@ const PlacesToVisit: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/selimiyecamii1.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -67,7 +67,7 @@ const PlacesToVisit: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/girnelimanı.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -97,7 +97,7 @@ const PlacesToVisit: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/apolasandreasmanastırı.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -131,7 +131,7 @@ const PlacesToVisit: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/lalamustafapaşa.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}

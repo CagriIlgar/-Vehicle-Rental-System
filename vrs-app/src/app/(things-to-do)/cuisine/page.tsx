@@ -31,7 +31,7 @@ const Cuisine: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/magarinabulli.jpg"
                             alt="Food in Lefkoşa"
                             width={300}
                             height={200}
@@ -109,7 +109,7 @@ const Cuisine: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/şeftalikebabı.jpg"
                             alt="Cuisine in Mağusa"
                             width={300}
                             height={200}
@@ -134,7 +134,7 @@ const Cuisine: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/turunçmacunu.jpg"
                             alt="Local food in Güzelyurt"
                             width={300}
                             height={200}

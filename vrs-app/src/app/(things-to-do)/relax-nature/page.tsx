@@ -31,7 +31,7 @@ const RelaxNature: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/büyükhan1.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -58,7 +58,7 @@ const RelaxNature: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/kale.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -87,7 +87,7 @@ const RelaxNature: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/altınkum.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -113,7 +113,7 @@ const RelaxNature: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/palmbeach.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
