@@ -58,7 +58,7 @@ const RelaxNature: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/kale.jpg"
+                            src="/alagadi.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}

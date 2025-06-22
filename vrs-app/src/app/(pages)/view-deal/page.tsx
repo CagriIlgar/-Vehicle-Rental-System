@@ -59,11 +59,16 @@ const ViewDeal = () => {
     };
 
     const handlePayNow = async () => {
-        const userId = session?.user?.id;
-        const userEmail = session?.user?.email;
+        if (!session) {
+            window.location.href = "/signin";
+            return;
+        }
+
+        const userId = session.user?.id;
+        const userEmail = session.user?.email;
 
         if (!vehicle || !userId || !userEmail) {
-            alert("Missing Information!");
+            alert("Missing information!");
             return;
         }
 
@@ -114,6 +119,7 @@ const ViewDeal = () => {
             alert("Something went wrong!");
         }
     };
+
 
 
     if (!vehicle) {

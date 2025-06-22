@@ -52,7 +52,7 @@ const Nightlife: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/club.jpeg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -73,7 +73,7 @@ const Nightlife: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/club2.jpeg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -94,7 +94,7 @@ const Nightlife: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/garden.jpeg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
@@ -119,7 +119,7 @@ const Nightlife: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/festival.jpg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}

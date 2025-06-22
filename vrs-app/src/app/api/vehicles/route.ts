@@ -5,7 +5,6 @@ import type { RowDataPacket, OkPacket } from 'mysql2';
 import { cloudinary } from '@/lib/cloudinary';
 import { buffer } from 'stream/consumers';
 
-// Helper to convert Web ReadableStream to Node Readable
 async function webStreamToNodeReadable(webStream: ReadableStream<Uint8Array>) {
   const reader = webStream.getReader();
   const stream = new Readable({

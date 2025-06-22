@@ -23,7 +23,6 @@ const authOptions: NextAuthOptions = {
           throw new Error("Email and password are required");
         }
 
-        // Admin Login Handling
         const [adminRows] = await pool.execute(
           "SELECT * FROM admin WHERE AdminEmail = ?",
           [credentials.email]
@@ -43,7 +42,6 @@ const authOptions: NextAuthOptions = {
           };
         }
 
-        // Regular User Login Handling
         const [rows] = await pool.execute(
           "SELECT * FROM users WHERE email = ?",
           [credentials.email]

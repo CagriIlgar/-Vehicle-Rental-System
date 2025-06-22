@@ -161,7 +161,7 @@ const PlacesToVisit: React.FC = () => {
                     </div>
                     <div className="about-image">
                         <Image
-                            src="/beach.jpg"
+                            src="/yeniliman.jpeg"
                             alt="Beach in North Cyprus"
                             width={300}
                             height={200}
