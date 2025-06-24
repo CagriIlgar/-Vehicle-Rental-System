@@ -1,50 +1,113 @@
-import { pool } from "@/lib/mysql";
-import { NextResponse } from "next/server";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-
-// Define the expected shape of the seller row
-interface Seller extends RowDataPacket {
-    SellerID: number;
-    BusinessName: string;
-    Industry: string;
-    ContactPersonName: string;
-    ContactPersonSurname: string;
-    BusinessEmail: string;
-    BusinessCity: string;
-    BusinessAddress: string;
-    Password: string;
-    Approved: number;
-    BusinessPhone: string;
-    
-}
+// src/app/api/admin/route.ts
+import { NextResponse } from 'next/server';
+import { pool } from '@/lib/mysql';
 
 export async function GET() {
     try {
-        const [rows] = await pool.execute<Seller[]>("SELECT * FROM seller WHERE Approved = 0");
+        const connection = await pool.getConnection();
 
-        return NextResponse.json({ businesses: rows });
+        const [businesses] = await connection.execute('SELECT * FROM seller');
+        const [customers] = await connection.execute('SELECT * FROM customer');
+
+        connection.release();
+
+        return NextResponse.json({ businesses, customers });
     } catch (error) {
-        console.error("Error fetching businesses:", error);
-        return NextResponse.error();
+        console.error('Database query failed:', error);
+        return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
     }
 }
 
 export async function PUT(request: Request) {
-    const { SellerID, approved }: { SellerID: number, approved: boolean } = await request.json();
-
     try {
-        const [result] = await pool.execute<ResultSetHeader>(
-            "UPDATE seller SET Approved = ? WHERE SellerID = ?",
-            [approved ? 1 : 0, SellerID]
-        );
+        const data = await request.json();
+        const connection = await pool.getConnection();
 
-        if (result.affectedRows > 0) {
-            return NextResponse.json({ message: "Approval status updated successfully" });
-        } else {
-            return NextResponse.json({ message: "Failed to update approval status" }, { status: 400 });
+        if (data.action === 'approve' || data.action === 'disapprove') {
+            const approvedStatus = data.action === 'approve' ? 1 : 0;
+            await connection.execute(
+                'UPDATE seller SET Approved = ? WHERE SellerID = ?',
+                [approvedStatus, data.id]
+            );
+            connection.release();
+            return NextResponse.json({ success: true });
         }
-    } catch (error) {
-        console.error("Error updating approval status:", error);
-        return NextResponse.error();
+
+        if ('BusinessName' in data) {
+            const {
+                SellerID,
+                BusinessName,
+                Industry,
+                ContactPersonName,
+                ContactPersonSurname,
+                BusinessEmail,
+                BusinessPhone,
+                BusinessCity,
+                BusinessAddress,
+                Approved,
+            } = data;
+
+            await connection.execute(
+                `UPDATE seller SET 
+                BusinessName = ?, Industry = ?, ContactPersonName = ?, ContactPersonSurname = ?, 
+                BusinessEmail = ?, BusinessPhone = ?, BusinessCity = ?, BusinessAddress = ?, Approved = ?
+                WHERE SellerID = ?`,
+                [
+                    BusinessName,
+                    Industry,
+                    ContactPersonName,
+                    ContactPersonSurname,
+                    BusinessEmail,
+                    BusinessPhone,
+                    BusinessCity,
+                    BusinessAddress,
+                    Approved ?? 1,
+                    SellerID,
+                ]
+            );
+
+            connection.release();
+            return NextResponse.json({ success: true });
+        }
+
+        if ('CustomerName' in data) {
+            const {
+                CustomerID,
+                CustomerName,
+                CustomerSurname,
+                DateOfBirth,
+                CustomerEmail,
+                CustomerPhone,
+            } = data;
+
+            await connection.execute(
+                `UPDATE customer SET 
+                CustomerName = ?, CustomerSurname = ?, DateOfBirth = ?, 
+                CustomerEmail = ?, CustomerPhone = ?
+                WHERE CustomerID = ?`,
+                [
+                    CustomerName,
+                    CustomerSurname,
+                    DateOfBirth,
+                    CustomerEmail,
+                    CustomerPhone,
+                    CustomerID,
+                ]
+            );
+
+            connection.release();
+            return NextResponse.json({ success: true });
+        }
+
+        connection.release();
+        return NextResponse.json({ error: 'Invalid update payload' }, { status: 400 });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Update failed:', error.message);
+        } else {
+            console.error('Update failed:', error);
+        }
+        return NextResponse.json({ error: 'Server error during update' }, { status: 500 });
     }
 }

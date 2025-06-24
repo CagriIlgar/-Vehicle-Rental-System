@@ -271,7 +271,7 @@ const ProfilePage: React.FC = () => {
                 <div key={booking.ReservationNumber} style={{ marginBottom: "20px" }}>
                   <h2>{booking.Brand} {booking.Model} ({booking.Year})</h2>
                   <p><strong>Reservation #:</strong> {booking.ReservationNumber}</p>
-                  
+
                   <p><strong>Start Date:</strong> {new Date(booking.StartDate).toLocaleDateString()}</p>
                   <p><strong>End Date:</strong> {new Date(booking.EndDate).toLocaleDateString()}</p>
                   <p><strong>Pick Up Time:</strong> {booking.PickUpTime} </p>
@@ -432,6 +432,19 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {session.user?.isAdmin && (
+          <button
+            type="button"
+            onClick={() => router.push('/admin')}
+            className="GoToAdminBtn"
+          >
+            Go to Admin Panel
+          </button>
+        )}
+
+
+
 
         <button className="sign-out-btn" onClick={() => signOut()}>
           Sign Out
