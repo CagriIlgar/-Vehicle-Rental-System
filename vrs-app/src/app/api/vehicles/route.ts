@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
         transmission || null,
         seats || null,
         pricePerDay || null,
-        cloudinaryResult.secure_url, 
+        cloudinaryResult.secure_url,
         largeBag || null,
         availability || null,
         color || null,
@@ -182,26 +182,59 @@ export async function DELETE(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const VehicleID = body.VehicleID as number | undefined;
-    const AvailabilityStatus = body.AvailabilityStatus as string | undefined;
+    const {
+      VehicleID,
+      Brand,
+      Model,
+      Year,
+      FuelType,
+      Transmission,
+      Seats,
+      PricePerDay,
+      AvailabilityStatus,
+      Color,
+      LargeBag,
+      ImportantInfo,
+      Contact,
+      Location,
+    } = body;
 
-    if (!VehicleID || !AvailabilityStatus) {
-      return NextResponse.json({ message: 'VehicleID and AvailabilityStatus are required' }, { status: 400 });
+    if (!VehicleID) {
+      return NextResponse.json({ message: 'VehicleID is required' }, { status: 400 });
     }
 
     const [result] = await pool.execute<OkPacket>(
-      `UPDATE vehicle SET AvailabilityStatus = ? WHERE VehicleID = ?`,
-      [AvailabilityStatus, VehicleID]
+      `UPDATE vehicle
+        SET Brand = ?, Model = ?, Year = ?, FuelType = ?, Transmission = ?, Seats = ?, PricePerDay = ?, 
+        AvailabilityStatus = ?, Color = ?, LargeBag = ?, ImportantInfo = ?, Contact = ?, LocationID = ?
+        WHERE VehicleID = ?`,
+      [
+        Brand || null,
+        Model || null,
+        Year || null,
+        FuelType || null,
+        Transmission || null,
+        Seats || null,
+        PricePerDay || null,
+        AvailabilityStatus || null,
+        Color || null,
+        LargeBag || null,
+        ImportantInfo || null,
+        Contact || null,
+        Location || null,
+        VehicleID,
+      ]
     );
 
     if (result.affectedRows > 0) {
-      return NextResponse.json({ message: 'Availability status updated successfully' });
+      return NextResponse.json({ message: 'Vehicle updated successfully' });
     }
 
-    return NextResponse.json({ message: 'Failed to update availability status' }, { status: 400 });
+    return NextResponse.json({ message: 'No vehicle updated' }, { status: 400 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error occurred';
     console.error('Error in PUT:', message);
-    return NextResponse.json({ message: 'Failed to update availability status', error: message }, { status: 500 });
+    return NextResponse.json({ message: 'Failed to update vehicle', error: message }, { status: 500 });
   }
 }
+

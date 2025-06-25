@@ -17,7 +17,6 @@ type Location = {
   Longitude: number;
 };
 
-
 const AddVehicle: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();

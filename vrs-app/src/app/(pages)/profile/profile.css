@@ -238,6 +238,16 @@
   background-color: var(--color-success);
 }
 
+.edit-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #0070f3;
+}
+
 
 /* Modal Overlay Pop Up*/
 .modal-overlay {
@@ -255,7 +265,7 @@
 
 .modal-content {
   background: white;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 10px;
   width: 90%;
   max-width: 500px;
@@ -266,11 +276,17 @@
 .modal-content select {
   width: 100%;
   padding: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 5px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
+}
 
+.modal-content label {
+  font-size: 13px;
+  text-align: left;
+  display: block;
+  color: #333;
 }
 
 .modal-buttons {
@@ -288,7 +304,8 @@
   cursor: pointer;
 }
 
-.log-in-btn{
+.log-in-btn,
+.GoToAdminBtn {
   background-color: var(--button-blue-100);
   color: white;
   padding: 10px;
@@ -296,9 +313,10 @@
   width: 30%;
   font-weight: bold;
   transition: background 0.3s ease;
+  margin-right: 20px;
 }
 
-.add-location-btn,.GoToAdminBtn {
+.add-location-btn {
   background-color: var(--button-blue-100);
   color: white;
   padding: 10px;
@@ -308,9 +326,12 @@
   transition: background 0.3s ease;
 }
 
-.add-location-btn:hover,.GoToAdminBtn,.log-in-btn {
+.add-location-btn:hover,
+.GoToAdminBtn:hover,
+.log-in-btn:hover {
   background-color: #004599;
 }
+
 .booking-details {
   background-color: var(--color-gray-100);
   padding: 25px;
@@ -351,7 +372,6 @@
 }
 
 
-/* Responsive tasarım */
 @media (max-width: 1024px) {
   .vehicle-grid {
     grid-template-columns: repeat(2, 1fr);

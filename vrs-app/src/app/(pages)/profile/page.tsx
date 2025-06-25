@@ -23,6 +23,7 @@ interface Vehicle {
   ImportantInfo: string;
   Contact: string;
   Location: string;
+  LocationID: number;
   SellerName: string;
   SellerSurname: string;
 }
@@ -70,6 +71,13 @@ const ProfilePage: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+
+  const openEditModal = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
+    setEditModalOpen(true);
+  };
 
   const fetchLocations = async () => {
     if (session && session.user) {
@@ -114,6 +122,45 @@ const ProfilePage: React.FC = () => {
     setLocationData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleVehicleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedVehicle) return;
+
+    const formData = new FormData(e.currentTarget);
+    const updatedVehicle = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch("/api/vehicles", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...updatedVehicle,
+          VehicleID: selectedVehicle.VehicleID,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Vehicle updated successfully!");
+        setEditModalOpen(false);
+        const updatedVehicles = vehicles.map((v) =>
+          v.VehicleID === selectedVehicle.VehicleID ? { ...v, ...updatedVehicle } : v
+        );
+        setVehicles(updatedVehicles as Vehicle[]);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error("Vehicle update error:", err);
+      alert("Error updating vehicle.");
+    }
+
+  };
+
   const addLocation = async () => {
     if (
       !locationData.LocationName ||
@@ -146,20 +193,37 @@ const ProfilePage: React.FC = () => {
       setMessage(data.message || "Failed to add location.");
     }
   };
-  const updateVehicleStatus = async (vehicleId: number, status: string) => {
+  const updateVehicleStatus = async (vehicleId: number, newStatus: string) => {
+    const vehicleToUpdate = vehicles.find(v => v.VehicleID === vehicleId);
+    if (!vehicleToUpdate) return;
+
+    const fullVehicleData = {
+      ...vehicleToUpdate,
+      AvailabilityStatus: newStatus,
+      Location: vehicleToUpdate.LocationID, // dikkat, backend LocationID bekliyor
+    };
+
     try {
       const response = await fetch("/api/vehicles", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ VehicleID: vehicleId, AvailabilityStatus: status }),
+        body: JSON.stringify(fullVehicleData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         alert("Availability status updated!");
+
+        setVehicles(prev =>
+          prev.map(v =>
+            v.VehicleID === vehicleId
+              ? { ...v, AvailabilityStatus: newStatus }
+              : v
+          )
+        );
       } else {
         alert(`Failed to update status: ${data.message}`);
       }
@@ -168,6 +232,7 @@ const ProfilePage: React.FC = () => {
       alert("Failed to update vehicle status");
     }
   };
+
 
 
   const deleteLocation = async (locationId: number) => {
@@ -226,7 +291,6 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-
   if (status === "loading") {
     return <p className="loading-text">Loading...</p>;
   }
@@ -264,6 +328,7 @@ const ProfilePage: React.FC = () => {
           <p className="user-greeting">
             Welcome, <strong>{session?.user?.name}</strong>!
           </p>
+
           {!isBusiness && bookings.length > 0 && (
             <div className="booking-details">
               <h2>Your Bookings</h2>
@@ -419,6 +484,67 @@ const ProfilePage: React.FC = () => {
                         </button>
 
                         <button
+                          className="edit-btn"
+                          onClick={() => openEditModal(vehicle)}
+                        >
+                          Edit
+                        </button>
+
+                        {editModalOpen && selectedVehicle && (
+                          <div className="modal-overlay">
+                            <div className="modal-content">
+                              <h2>Edit Vehicle</h2>
+                              <form onSubmit={handleVehicleUpdate}>
+                                <label>Brand</label>
+                                <input name="Brand" defaultValue={selectedVehicle.Brand} required />
+                                <label>Model</label>
+                                <input name="Model" defaultValue={selectedVehicle.Model} required />
+                                <label>Year</label>
+                                <input name="Year" defaultValue={selectedVehicle.Year} type="number" required />
+                                <label>Fuel Type</label>
+                                <input name="FuelType" defaultValue={selectedVehicle.FuelType} required />
+                                <label>Transmission</label>
+                                <input name="Transmission" defaultValue={selectedVehicle.Transmission} required />
+                                <label>Seats</label>
+                                <input name="Seats" defaultValue={selectedVehicle.Seats} type="number" required />
+                                <label>Price Per Day</label>
+                                <input name="PricePerDay" defaultValue={selectedVehicle.PricePerDay} type="number" required />
+                                <label>Color</label>
+                                <input name="Color" defaultValue={selectedVehicle.Color} required />
+                                <label>Important Info</label>
+                                <input name="ImportantInfo" defaultValue={selectedVehicle.ImportantInfo} />
+                                <label>Contact Number</label>
+                                <input name="Contact" defaultValue={selectedVehicle.Contact} required />
+                                <label>Location</label>
+                                <select
+                                  name="Location"
+                                  defaultValue={
+                                    selectedVehicle?.LocationID !== null &&
+                                      selectedVehicle?.LocationID !== undefined
+                                      ? selectedVehicle.LocationID.toString()
+                                      : ""
+                                  }
+                                  required
+                                >
+                                  <option value="">Select Location</option>
+                                  {locations.map((loc) => (
+                                    <option key={loc.LocationID} value={loc.LocationID.toString()}>
+                                      {loc.LocationName} - {loc.City}
+                                    </option>
+                                  ))}
+                                </select>
+
+                                <div className="modal-buttons">
+                                  <button type="submit" className="update-btn">Save Changes</button>
+                                  <button type="button" onClick={() => setEditModalOpen(false)} className="cancel-btn">Cancel</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        )}
+
+
+                        <button
                           className="delete-btn"
                           onClick={() => deleteVehicle(vehicle.VehicleID)}
                         >
@@ -442,8 +568,6 @@ const ProfilePage: React.FC = () => {
             Go to Admin Panel
           </button>
         )}
-
-
 
 
         <button className="sign-out-btn" onClick={() => signOut()}>
