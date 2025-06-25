@@ -1,8 +1,8 @@
 .home-info {
-    border-bottom: 1px solid var(--bg-default);
+    border-bottom: 1px solid white;
     padding: 1rem;
     width: 70%;
-    margin: 0 auto;
+    margin: 30px auto;
 }
 
 .bg-cover {
@@ -46,7 +46,6 @@
     margin: 0 auto;
 }
 
-/*  Category Cards Section */
 .card {
     background-color: var(--bg-card);
     border-radius: 12px;
@@ -156,6 +155,64 @@
     color: var(--color-primary-50);
     font-weight: bold;
 }
+
+@media screen and (max-width: 1024px) {
+    .home-title{
+        margin-top: 20px;
+        font-size: 40px;
+    }
+
+    .home-info,
+    .seperator {
+        width: 90%;
+        padding: 0.8rem;
+    }
+
+    .intro-text {
+        font-size: 16px;
+    }
+
+    .card {
+        width: 80%;
+        max-width: 340px;
+        height: auto;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .things-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .things-card img {
+        height: 200px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .intro-text {
+        font-size: 14px;
+        padding: 0 1rem;
+    }
+
+    .card-button {
+        font-size: 16px;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .things-card h3 {
+        font-size: 0.85rem;
+    }
+
+    .things-title {
+        font-size: 1.2rem;
+    }
+}
+
 
 @media screen and (max-width: 768px) {
     .things-grid {

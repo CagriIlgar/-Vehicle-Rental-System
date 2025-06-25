@@ -1,9 +1,6 @@
-@import url("../../styles/colors.css");
-
 .contact-section {
-    width: 50%;
+    width: 100%;
     max-width: 1200px;
-    margin: auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -11,10 +8,10 @@
     background-color: var(--color-gray-200);
     gap: 40px;
     border-radius: 10px;
+    box-sizing: border-box;
 }
 
 .contact-form {
-    text-align: left;
     flex: 1;
     min-width: 280px;
 }
@@ -36,6 +33,8 @@
     border: 1px solid var(--color-primary-50);
     border-radius: 6px;
     resize: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .contact-form button {
@@ -47,6 +46,8 @@
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .contact-form button:hover {
@@ -69,7 +70,6 @@
     margin: 10px 0;
 }
 
-
 @media (max-width: 768px) {
     .contact-section {
         flex-direction: column;
@@ -81,6 +81,12 @@
     .contact-details {
         width: 100%;
     }
+
+    .contact-form input,
+    .contact-form textarea,
+    .contact-form button {
+        font-size: 15px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -89,13 +95,9 @@
     }
 
     .contact-form input,
-    .contact-form textarea {
-        font-size: 14px;
-    }
-
+    .contact-form textarea,
     .contact-form button {
         font-size: 14px;
-        padding: 10px;
     }
 
     .contact-details h3 {

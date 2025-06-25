@@ -163,7 +163,7 @@ const ViewDeal = () => {
 
                     <div className="extras">
                         <div className="extra-item">
-                            <img src="/baby-seat.jpg" alt="Baby Seat" />
+                            <img src="/baby-seat.png" alt="Baby Seat" />
                             <div>
                                 <h4>Baby Seat</h4>
                                 <p>Forward-facing baby seat suitable for Age: 1-6 years</p>
@@ -177,7 +177,7 @@ const ViewDeal = () => {
                         </div>
 
                         <div className="extra-item">
-                            <img src="/car-charger.jpg" alt="Car Charger USB" />
+                            <img src="/car-charger.png" alt="Car Charger USB" />
                             <div>
                                 <h4>Car Charger USB</h4>
                                 <p>A simple cigarette lighter USB adapter to charge any USB device on the go.</p>

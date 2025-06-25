@@ -288,6 +288,16 @@
   cursor: pointer;
 }
 
+.log-in-btn{
+  background-color: var(--button-blue-100);
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  width: 30%;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
 .add-location-btn,.GoToAdminBtn {
   background-color: var(--button-blue-100);
   color: white;
@@ -298,7 +308,7 @@
   transition: background 0.3s ease;
 }
 
-.add-location-btn:hover,.GoToAdminBtn {
+.add-location-btn:hover,.GoToAdminBtn,.log-in-btn {
   background-color: #004599;
 }
 .booking-details {
