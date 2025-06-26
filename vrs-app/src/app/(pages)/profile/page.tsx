@@ -329,6 +329,15 @@ const ProfilePage: React.FC = () => {
             Welcome, <strong>{session?.user?.name}</strong>!
           </p>
 
+          {isBusiness && !isApproved && (
+            <div className="approval-warning">
+              <p style={{ color: "crimson", fontWeight: "bold", marginTop: "1rem" }}>
+                Your business account is awaiting approval. You will be able to upload vehicles once approved.
+              </p>
+            </div>
+          )}
+
+
           {!isBusiness && bookings.length > 0 && (
             <div className="booking-details">
               <h2>Your Bookings</h2>
@@ -364,7 +373,7 @@ const ProfilePage: React.FC = () => {
           </div>
         )}
 
-        {isBusiness && isApproved && (
+        {isBusiness && Boolean(isApproved) && (
           <div className="business-section">
             <div className="action-buttons-container">
               <button
