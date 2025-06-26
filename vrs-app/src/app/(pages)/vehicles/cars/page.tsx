@@ -385,9 +385,8 @@ const Cars: React.FC = () => {
               </div>
             </div>
 
-
             {filteredVehicles.length === 0 ? (
-              <p>Filtrelere uygun araç bulunamadı.</p>
+              <p>Vehicle not found.</p>
             ) : (
               filteredVehicles.map((vehicle) => (
                 <VehicleCard

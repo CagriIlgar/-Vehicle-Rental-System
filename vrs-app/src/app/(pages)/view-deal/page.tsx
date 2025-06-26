@@ -34,14 +34,17 @@ const ViewDeal = () => {
     const extraPrice = extras.babySeat * 10 + extras.carCharger * 5;
     const totalCost = vehicle ? vehicle.TotalPrice + extraPrice : 0;
 
-    const updateVehicleStatus = async (vehicleId: number, status: string) => {
+    const updateVehicleStatus = async (vehicleId: number, newStatus: string) => {
         try {
-            const response = await fetch("/api/vehicles", {
+            const response = await fetch("/api/vehicles/status", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ VehicleID: vehicleId, AvailabilityStatus: status }),
+                body: JSON.stringify({
+                    VehicleID: vehicleId,
+                    AvailabilityStatus: newStatus,
+                }),
             });
 
             const data = await response.json();
@@ -57,6 +60,7 @@ const ViewDeal = () => {
             return false;
         }
     };
+
 
     const handlePayNow = async () => {
         if (!session) {

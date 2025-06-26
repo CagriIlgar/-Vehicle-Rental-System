@@ -179,9 +179,11 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
+// /api/vehicles/route.ts
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
+
     const {
       VehicleID,
       Brand,
@@ -205,9 +207,9 @@ export async function PUT(req: NextRequest) {
 
     const [result] = await pool.execute<OkPacket>(
       `UPDATE vehicle
-        SET Brand = ?, Model = ?, Year = ?, FuelType = ?, Transmission = ?, Seats = ?, PricePerDay = ?, 
-        AvailabilityStatus = ?, Color = ?, LargeBag = ?, ImportantInfo = ?, Contact = ?, LocationID = ?
-        WHERE VehicleID = ?`,
+       SET Brand = ?, Model = ?, Year = ?, FuelType = ?, Transmission = ?, Seats = ?, PricePerDay = ?, 
+       AvailabilityStatus = ?, Color = ?, LargeBag = ?, ImportantInfo = ?, Contact = ?, LocationID = ?
+       WHERE VehicleID = ?`,
       [
         Brand || null,
         Model || null,
@@ -232,9 +234,10 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ message: 'No vehicle updated' }, { status: 400 });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error occurred';
-    console.error('Error in PUT:', message);
+    const message = error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json({ message: 'Failed to update vehicle', error: message }, { status: 500 });
   }
+
 }
+
 

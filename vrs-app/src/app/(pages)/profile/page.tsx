@@ -200,7 +200,7 @@ const ProfilePage: React.FC = () => {
     const fullVehicleData = {
       ...vehicleToUpdate,
       AvailabilityStatus: newStatus,
-      Location: vehicleToUpdate.LocationID, // dikkat, backend LocationID bekliyor
+      Location: vehicleToUpdate.LocationID,
     };
 
     try {
@@ -533,6 +533,17 @@ const ProfilePage: React.FC = () => {
                                     </option>
                                   ))}
                                 </select>
+                                <label>Availability Status</label>
+                                <select
+                                  name="AvailabilityStatus"
+                                  defaultValue={selectedVehicle.AvailabilityStatus || "Available"}
+                                  required
+                                >
+                                  <option value="Available">Available</option>
+                                  <option value="Rented">Rented</option>
+                                  <option value="Maintenance">Maintenance</option>
+                                </select>
+
 
                                 <div className="modal-buttons">
                                   <button type="submit" className="update-btn">Save Changes</button>
